@@ -51,3 +51,11 @@ class MusicPlayer:
             return self.mixer.get_pos() / 1000 / self.getLengthOfSong()
         except AttributeError:
             return 0
+
+
+if __name__ == '__main__':
+    from tkinter import *
+    root = Tk()
+    player = MusicPlayer()
+    player.play()
+    root.mainloop()

@@ -6,19 +6,19 @@ class Song:
         self.hoursPlayed = hoursPlayed
         self.numberOfPlaylist = numberOfPlaylist
 
-    def getTitle(self):
+    def getTitle(self) -> str:
         return self.title
 
-    def getAddedDate(self):
+    def getAddedDate(self) -> str:
         return self.addedDate
 
-    def getTimesPlayed(self):
+    def getTimesPlayed(self) -> int:
         return self.timesPlayed
 
-    def getHoursPlayed(self):
+    def getHoursPlayed(self) -> float:
         return self.hoursPlayed
 
-    def getNumberOfPlaylist(self):
+    def getNumberOfPlaylist(self) -> int:
         return self.numberOfPlaylist
 
     def played(self):
@@ -32,6 +32,14 @@ class Song:
 
     def removedFromPlaylist(self):
         if self.numberOfPlaylist == 0:
-            raise RuntimeError
+            raise MemoryError
         self.numberOfPlaylist -= 1
 
+    def getData(self) -> dict:
+        return {"Added date": self.getAddedDate(),
+                "Number of times played": self.getTimesPlayed(),
+                "Number of hours played": self.getHoursPlayed(),
+                "Number of playlist it is in": self.getNumberOfPlaylist()}
+
+    def __str__(self):
+        return self.getTitle()

@@ -23,6 +23,9 @@ class Playlist:
     def getSongs(self):
         return self.songs
 
+    def getNumberOfSongs(self):
+        return len(self.songs)
+
     def getFirstSong(self):
         return self.firstSong
 
@@ -41,9 +44,13 @@ class Playlist:
         else:
             self.firstSong[song] = 1
 
-    def addChanges(self):
-        # TODO
-        pass
+    def addChanges(self, sign, title):
+        self.changesRecord += "{} {}\n".format(sign, title)
 
     def addSong(self, song):
         self.songs.append(song)
+        self.addChanges("+", song.getTitle())
+
+    def removeSong(self, song):
+        del self.songs[self.songs.index(song)]
+        self.addChanges("-", song.getTitle())

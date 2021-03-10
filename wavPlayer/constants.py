@@ -5,5 +5,6 @@ COLLECTED_DATA_PATH = "/Users/max/PycharmProjects/WAVplayer/userData/collectedDa
 ICONS_PATH = "/Users/max/PycharmProjects/WAVplayer/resources/icons"
 
 GUI_HEIGHT = 260
-GUI_WIDTH = 860
+GUI_WIDTH = 710
 GUI_LEFTSIDE_WIDTH = 210
+GUI_RIGHTSIDE_WIDTH = GUI_WIDTH - GUI_LEFTSIDE_WIDTH

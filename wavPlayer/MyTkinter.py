@@ -77,6 +77,69 @@ class ProgressBar(Canvas):
         self.master.after(1000, self.progress)
 
 
+class ButtonsFrame(Frame):
+    def __init__(self, master, width, height, background):
+        super().__init__(master, width=width, height=height, bg=background)
+        self.buttonsPhotos = []
+        self.background = background
+
+        self.prevButton = self.createBlinkingButton("prev")
+        self.prevButton.place(relx=0.37, rely=0.3625)
+
+        self.playButton = self.createBlinkingButton("play")
+        self.playButton.place(relx=0.48, rely=0.26)
+
+        self.nextButton = self.createBlinkingButton("next")
+        self.nextButton.place(relx=0.58, rely=0.3625)
+
+        self.pauseButton = self.createBlinkingButton("pause")
+        # self.pauseButton.place(relx=0.48, rely=0.26)
+
+        self.randomButton = self.createStaticButton("random")
+        self.randomButton.place(relx=0.26, rely=0.3625)
+
+        self.reloadButton = self.createStaticButton("reload")
+        self.reloadButton.place(relx=0.70, rely=0.3625)
+
+    def createBlinkingButton(self, name) -> BlinkingButton:
+        img = open("{}/{}.png".format(ICONS_PATH, name))
+        photo = PhotoImage(img)
+        img2 = open("{}/{}_clicked.png".format(ICONS_PATH, name))
+        photo2 = PhotoImage(img2)
+        self.buttonsPhotos.append(photo)
+        self.buttonsPhotos.append(photo2)
+
+        return BlinkingButton(self, photo, photo2, bg=self.background)
+
+    def createStaticButton(self, name) -> StaticButton:
+        img = open("{}/{}_enabled.png".format(ICONS_PATH, name))
+        photo = PhotoImage(img)
+        img2 = open("{}/{}_disabled.png".format(ICONS_PATH, name))
+        photo2 = PhotoImage(img2)
+        self.buttonsPhotos.append(photo)
+        self.buttonsPhotos.append(photo2)
+
+        return StaticButton(self, photo2, photo, bg=self.background)
+
+    def setRandomCommand(self, command):
+        self.randomButton.setCommand(command)
+
+    def setPrevCommand(self, command):
+        self.prevButton.setCommand(command)
+
+    def setPlayCommand(self, command):
+        self.playButton.setCommand(command)
+
+    def setNextCommand(self, command):
+        self.nextButton.setCommand(command)
+
+    def setReloadCommand(self, command):
+        self.reloadButton.setCommand(command)
+
+    def setPauseCommand(self, command):
+        self.pauseButton.setCommand(command)
+
+
 class VolumeBar(Canvas):
     def __init__(self, master):
         super().__init__(master, width=GUI_RIGHTSIDE_WIDTH // 2, height=50, bd=0, highlightthickness=0)
@@ -151,6 +214,33 @@ class VolumeFrame(Frame):
         return BlinkingButton(master, photo, photo2, bg="white")
 
 
+class TextButton(Label):
+    def __init__(self, master, background, backgroundClicked, **kw):
+        super().__init__(master, bg=background, **kw)
+
+        self.background = background
+        self.backgroundClicked = backgroundClicked
+
+        self.command = lambda *args: print("Working")
+
+        self.bind('<Button-1>', lambda *args: self.clicked())
+        self.bind('<ButtonRelease-1>', lambda *args: self.unclicked())
+
+    def setCommand(self, command):
+        self.command = command
+
+    def clicked(self):
+        self.configure(bg=self.backgroundClicked)
+
+    def unclicked(self):
+        self.configure(bg=self.background)
+        self.command()
+
+
+
+
+
+
 if __name__ == '__main__':
     from tkinter import Tk
 
@@ -159,5 +249,7 @@ if __name__ == '__main__':
 
     c = VolumeFrame(root)
     c.pack()
+
+    TextButton(root, "#E7E7E7", "#BBBBBA", text="Statistics").pack()
 
     root.mainloop()

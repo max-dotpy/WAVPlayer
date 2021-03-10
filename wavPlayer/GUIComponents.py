@@ -1,5 +1,5 @@
 from tkinter import *
-from wavPlayer.MyTkinter import BlinkingButton, StaticButton, ProgressBar, VolumeFrame
+from wavPlayer.MyTkinter import BlinkingButton, StaticButton, ProgressBar, VolumeFrame, ButtonsFrame, TextButton
 from PIL.Image import open
 from PIL.ImageTk import PhotoImage
 from wavPlayer.constants import GUI_HEIGHT, GUI_LEFTSIDE_WIDTH, GUI_WIDTH, GUI_RIGHTSIDE_WIDTH, ICONS_PATH
@@ -97,68 +97,52 @@ class Controls(Frame):
     def __init__(self, master, **kw):
         super().__init__(master, **kw)
 
+        self.titleLabel = None
+        self.progressBar = None
+        self.buttonsFrame = None
+        self.volumeFrame = None
+        self.fadeButton = None
+        self.statisticsButton = None
 
-class ButtonsFrame(Frame):
-    def __init__(self, master, width, height, background):
-        super().__init__(master, width=width, height=height, bg=background)
-        self.buttonsPhotos = []
-        self.background = background
+        self.setLayout()
 
-        self.prevButton = self.createBlinkingButton("prev")
-        self.prevButton.place(relx=0.37, rely=0.3625)
+    def setLayout(self):
+        titleFrame = Frame(self, width=GUI_RIGHTSIDE_WIDTH, height=50)
+        titleFrame.pack(fill=Y)
+        titleFrame.pack_propagate(0)
 
-        self.playButton = self.createBlinkingButton("play")
-        self.playButton.place(relx=0.48, rely=0.26)
+        self.titleLabel = Label(titleFrame, bd=0)
+        self.titleLabel.pack(pady=15)
 
-        self.nextButton = self.createBlinkingButton("next")
-        self.nextButton.place(relx=0.58, rely=0.3625)
+        self.progressBar = ProgressBar(self, GUI_RIGHTSIDE_WIDTH, bg="#d0d0d0")
+        self.progressBar.pack()
 
-        self.pauseButton = self.createBlinkingButton("pause")
-        # self.pauseButton.place(relx=0.48, rely=0.26)
+        self.buttonsFrame = ButtonsFrame(self, GUI_RIGHTSIDE_WIDTH, 40, "white")
+        self.buttonsFrame.pack()
 
-        self.randomButton = self.createStaticButton("random")
-        self.randomButton.place(relx=0.26, rely=0.3625)
+        self.volumeFrame = VolumeFrame(self)
+        self.volumeFrame.pack()
 
-        self.reloadButton = self.createStaticButton("reload")
-        self.reloadButton.place(relx=0.70, rely=0.3625)
+        bottomFrame = Frame(self)
+        bottomFrame.pack(side=BOTTOM, pady=40, padx=150, fill=X)
+        self.fadeButton = TextButton(bottomFrame, "#e7e7e7", "#bbbbba", text="Fade and exit")
+        self.fadeButton.pack(side=LEFT, padx=10)
+        self.statisticsButton = TextButton(bottomFrame, "#e7e7e7", "#bbbbba", text="Statistics")
+        self.statisticsButton.pack(side=LEFT)
 
-    def createBlinkingButton(self, name) -> BlinkingButton:
-        img = open("{}/{}.png".format(ICONS_PATH, name))
-        photo = PhotoImage(img)
-        img2 = open("{}/{}_clicked.png".format(ICONS_PATH, name))
-        photo2 = PhotoImage(img2)
-        self.buttonsPhotos.append(photo)
-        self.buttonsPhotos.append(photo2)
 
-        return BlinkingButton(self, photo, photo2, bg=self.background)
+class GUI:
+    def __init__(self, master):
+        self.table = Table(master)
+        self.table.pack(side=LEFT, fill=Y)
+        self.controls = Controls(master, width=GUI_RIGHTSIDE_WIDTH, height=GUI_HEIGHT)
+        self.controls.pack(side=LEFT, fill=Y)
 
-    def createStaticButton(self, name) -> StaticButton:
-        img = open("{}/{}_enabled.png".format(ICONS_PATH, name))
-        photo = PhotoImage(img)
-        img2 = open("{}/{}_disabled.png".format(ICONS_PATH, name))
-        photo2 = PhotoImage(img2)
-        self.buttonsPhotos.append(photo)
-        self.buttonsPhotos.append(photo2)
+    def getTable(self) -> Table:
+        return self.table
 
-        return StaticButton(self, photo2, photo, bg=self.background)
-
-    def setRandomCommand(self, command):
-        self.randomButton.setCommand(command)
-
-    def setPrevCommand(self, command):
-        self.prevButton.setCommand(command)
-
-    def setPlayCommand(self, command):
-        self.playButton.setCommand(command)
-
-    def setNextCommand(self, command):
-        self.nextButton.setCommand(command)
-
-    def setReloadCommand(self, command):
-        self.reloadButton.setCommand(command)
-
-    def setPauseCommand(self, command):
-        self.pauseButton.setCommand(command)
+    def getControls(self) -> Controls:
+        return self.controls
 
 
 if __name__ == '__main__':
@@ -166,28 +150,6 @@ if __name__ == '__main__':
     root.geometry("710x260+720+100")
     root.title("")
 
-    table = Table(root)
-    table.pack(side=LEFT, fill=Y)
-
-    controls = Controls(root, width=GUI_RIGHTSIDE_WIDTH, height=260)
-    controls.pack(side=LEFT, fill=Y)
-
-    titleFrame = Frame(controls, width=GUI_RIGHTSIDE_WIDTH, height=50)
-    titleFrame.pack(fill=Y)
-    titleFrame.pack_propagate(0)
-
-    titleLabel = Label(titleFrame, text="Titolo canzone", bd=0)
-    titleLabel.pack(pady=15)
-
-    bar = ProgressBar(controls, GUI_RIGHTSIDE_WIDTH, bg="#d0d0d0")
-    bar.pack()
-    bar.restart(120)
-    bar.progress()
-
-    buttonsFrame = ButtonsFrame(controls, GUI_RIGHTSIDE_WIDTH, 40, "white")
-    buttonsFrame.pack()
-
-    volumeFrame = VolumeFrame(controls)
-    volumeFrame.pack()
+    gui = GUI(root)
 
     root.mainloop()

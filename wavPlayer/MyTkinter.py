@@ -52,6 +52,11 @@ class StaticButton(Label):
     def unclicked(self):
         self.command()
 
+    def getState(self) -> bool:
+        if self.state:
+            return True
+        return False
+
 
 class ProgressBar(Canvas):
     def __init__(self, master, width, **kw):

@@ -1,4 +1,31 @@
+from wavPlayer.Song import Song
+from random import shuffle
+
+
 class Playlist:
+    """
+    methods:
+    + getTitle
+    + getCreationDate
+    + getTimesPlayed
+    + getHoursPlayed
+    + getSongs
+    + getSongsTitles
+    + getSongFromTitle
+    + getNumberOfSongs
+    + getFirstSongDict
+    + getChangesHistory
+    + played
+    + playedFor
+    + firstSongPicked
+    + addChanges
+    + addSong
+    + removeSong
+    + isDeleted
+    + getRandomizedPlaylist
+    + getOrderedPlaylist
+    + getData
+    """
     def __init__(self, title, creationDate, timesPlayed=0,
                  hoursPlayed=0, songs=None, firstSong=None, changesHistory=""):
         if title.startswith("(DELETED)"):
@@ -28,6 +55,11 @@ class Playlist:
 
     def getSongsTitles(self) -> list:
         return [song.getTitle() for song in self.getSongs()]
+
+    def getSongFromTitle(self, title) -> Song:
+        for song in self.getSongs():
+            if song.getTitle() == title:
+                return song
 
     def getNumberOfSongs(self) -> int:
         return len(self.songs)
@@ -63,6 +95,18 @@ class Playlist:
 
     def isDeleted(self) -> bool:
         return self.getTitle().startswith("(DELETED)")
+
+    def getRandomizedPlaylist(self, firstSong) -> list:
+        lst = [firstSong]
+        titles = self.getSongsTitles()
+        del titles[titles.index(firstSong)]
+        shuffle(titles)
+        return lst + titles
+
+    def getOrderedPlaylist(self, firstSong) -> list:
+        titles = self.getSongsTitles()
+        index = titles.index(firstSong)
+        return titles[index:] + titles[:index]
 
     def getData(self) -> dict:
         return {"Creation date": self.getCreationDate(),

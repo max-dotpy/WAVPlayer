@@ -1,4 +1,21 @@
+from wavPlayer.constants import WAV_DIRECTORY_PATH
+
+
 class Song:
+    """
+    methods:
+    + getTitle
+    + getAddedDate
+    + getTimesPlayed
+    + getHoursPlayed
+    + getNumberOfPlaylist
+    + getSongPath
+    + played
+    + playedFor
+    + addedToPlaylist
+    + removedFromPlaylist
+    + getData
+    """
     def __init__(self, title, addedDate, timesPlayed=0, hoursPlayed=0, numberOfPlaylist=0):
         self.title = title
         self.addedDate = addedDate
@@ -20,6 +37,9 @@ class Song:
 
     def getNumberOfPlaylist(self) -> int:
         return self.numberOfPlaylist
+
+    def getSongPath(self) -> str:
+        return "{}/{}.wav".format(WAV_DIRECTORY_PATH, self.getTitle())
 
     def played(self):
         self.timesPlayed += 1

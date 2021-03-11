@@ -3,6 +3,20 @@ from wavPlayer.constants import WAV_DIRECTORY_PATH
 
 
 class MusicPlayer:
+    """
+    methods:
+    + load
+    + play
+    + pause
+    + unpause
+    + stop
+    + changeSong
+    + isBusy
+    + changeVolume
+    + fadeAndExit
+    + getLengthOfSong
+    + getPercentagePlayed
+    """
     def __init__(self):
         mixer.init()
         self.mixer = mixer.music
@@ -39,7 +53,8 @@ class MusicPlayer:
         self.mixer.set_volume(volume)
 
     # TODO: check how to implement below method
-    # def fade_and_exit(self, time):
+    def fadeAndExit(self, time):
+        pass
     #     self.mixer.fadeout(time)
     #     self.root.after(time, self.root.destroy)
 

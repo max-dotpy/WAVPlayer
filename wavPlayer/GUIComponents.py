@@ -1,11 +1,34 @@
 from tkinter import *
-from wavPlayer.MyTkinter import BlinkingButton, StaticButton, ProgressBar, VolumeFrame, ButtonsFrame, TextButton
+from wavPlayer.MyTkinter import BlinkingButton, ProgressBar, VolumeFrame, ButtonsFrame, TextButton
 from PIL.Image import open
 from PIL.ImageTk import PhotoImage
-from wavPlayer.constants import GUI_HEIGHT, GUI_LEFTSIDE_WIDTH, GUI_WIDTH, GUI_RIGHTSIDE_WIDTH, ICONS_PATH
+from wavPlayer.constants import GUI_HEIGHT, GUI_LEFTSIDE_WIDTH, GUI_RIGHTSIDE_WIDTH, ICONS_PATH
 
 
 class Table(Frame):
+    """
+    methods:
+    + setLayout
+    + createBlinkingButton
+    + setPlusButtonCommand
+    + setGearButtonCommand
+    + setBinButtonCommand
+    + switchListbox
+    + fillPlaylistListbox
+    + fillSongListbox
+    + setPlaylistsDict
+    + setMusicPlayer
+    + setRandomButton
+    + setReloadButton
+    + setReturnEntryCommand
+    + searchPlaylistListbox
+    + searchSongListbox
+    + setCurrentPlaylistsTitles
+    + setCurrentSongsTitles
+    + setCurrentPlaylist
+    + playlistClicked
+    + songClicked
+    """
     def __init__(self, master, **kw):
         super().__init__(master, width=GUI_LEFTSIDE_WIDTH, height=GUI_HEIGHT, **kw)
 
@@ -19,6 +42,13 @@ class Table(Frame):
 
         self.buttonsPhotos = []
         self.currentListbox = "playlist"
+        self.currentPlaylistsTitles = []
+        self.currentSongsTitles = []
+        self.currentPlaylist = None
+        self.playlistsDict = None
+        self.musicPlayer = None
+        self.reloadButton = None
+        self.randomButton = None
         self.setLayout()
 
     def setLayout(self):
@@ -34,9 +64,13 @@ class Table(Frame):
         self.playlistListbox = Listbox(center, height=11, bg="#c2c2c2", bd=0, selectbackground="#a6a6a6",
                                        activestyle=NONE)
         self.playlistListbox.pack()
+        self.playlistListbox.bind("<ButtonRelease-1>", lambda *args: self.playlistClicked())
 
         self.songListbox = Listbox(center, height=11, bg="#c2c2c2", bd=0, selectbackground="#a6a6a6",
                                    activestyle=NONE)
+
+        self.songListbox.bind("<ButtonRelease-1>", lambda *args: self.songClicked(
+            self.randomButton.getState(), self.reloadButton.getState()))
 
         bot = Frame(self, width=210, height=30, bg="#c2c2c2")
         bot.pack(side=BOTTOM, fill=BOTH, expand=True)
@@ -49,6 +83,8 @@ class Table(Frame):
 
         self.binButton = self.createBlinkingButton(bot, "bin")
         self.binButton.place(relx=0.6, rely=0.05)
+
+        self.setReturnEntryCommand(lambda *args: self.searchPlaylistListbox())
 
     def createBlinkingButton(self, master, name) -> BlinkingButton:
         img = open("{}/{}.png".format(ICONS_PATH, name))
@@ -74,10 +110,12 @@ class Table(Frame):
             self.playlistListbox.pack_forget()
             self.songListbox.pack()
             self.currentListbox = "song"
+            self.setReturnEntryCommand(lambda *args: self.searchSongListbox())
         else:
             self.songListbox.pack_forget()
             self.playlistListbox.pack()
             self.currentListbox = "playlist"
+            self.setReturnEntryCommand(lambda *args: self.searchPlaylistListbox())
 
     def fillPlaylistListbox(self, titles):
         self.playlistListbox.delete(0, END)
@@ -89,11 +127,77 @@ class Table(Frame):
         for title in titles:
             self.songListbox.insert(END, title)
 
+    def setPlaylistsDict(self, dictionary):
+        self.playlistsDict = dictionary
+
+    def setMusicPlayer(self, musicPlayer):
+        self.musicPlayer = musicPlayer
+
+    def setRandomButton(self, button):
+        self.randomButton = button
+
+    def setReloadButton(self, button):
+        self.reloadButton = button
+
     def setReturnEntryCommand(self, command):
         self.searchEntry.bind("<Return>", command)
 
+    def searchPlaylistListbox(self):
+        text = self.searchEntry.get()
+        if text == "":
+            self.fillPlaylistListbox(self.currentPlaylistsTitles)
+        else:
+            lst = [title for title in self.currentPlaylistsTitles if text.lower() in title.lower()]
+            self.fillPlaylistListbox(lst)
+
+    def searchSongListbox(self):
+        text = self.searchEntry.get()
+        if text == "":
+            self.fillSongListbox(self.currentSongsTitles)
+        else:
+            lst = [title for title in self.currentSongsTitles if text.lower() in title.lower()]
+            self.fillSongListbox(lst)
+
+    def setCurrentPlaylistsTitles(self, titles):
+        self.currentPlaylistsTitles = titles
+
+    def setCurrentSongsTitles(self, titles):
+        self.currentSongsTitles = titles
+
+    def setCurrentPlaylist(self, playlist):
+        self.currentPlaylist = playlist
+
+    def playlistClicked(self):
+        index = self.playlistListbox.curselection()[0]
+        title = self.currentPlaylistsTitles[index]
+        songs = self.playlistsDict[title].getSongsTitles()
+        self.fillSongListbox(songs)
+        self.setCurrentSongsTitles(songs)
+        self.setCurrentPlaylist(self.playlistsDict[title])
+        self.switchListbox()
+
+        self.playlistsDict[title].played()
+
+    def songClicked(self, randomState, reloadState):
+        index = self.songListbox.curselection()[0]
+        title = self.currentSongsTitles[index]
+        song = self.currentPlaylist.getSongFromTitle(title)
+
+        # TODO: ok abbiamo la first song, crea la playlist, a seconda del reload e del random,
+        # TODO: e poi salva tutti i dati e fai partire
+
+        if randomState:
+            pass
+        else:
+            order = self.currentPlaylist.getOrderedPlaylist()
+
 
 class Controls(Frame):
+    """
+    methods:
+    + setLayout
+    + statisticsCommand
+    """
     def __init__(self, master, **kw):
         super().__init__(master, **kw)
 
@@ -130,8 +234,17 @@ class Controls(Frame):
         self.statisticsButton = TextButton(bottomFrame, "#e7e7e7", "#bbbbba", text="Statistics")
         self.statisticsButton.pack(side=LEFT)
 
+    # TODO: implement this
+    def statisticsCommand(self):
+        pass
+
 
 class GUI:
+    """
+    methods:
+    + getTable
+    + getControls
+    """
     def __init__(self, master):
         self.table = Table(master)
         self.table.pack(side=LEFT, fill=Y)

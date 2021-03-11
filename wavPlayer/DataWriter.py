@@ -14,7 +14,7 @@ class DataWriter:
     + addNewPlaylist
     + removePlaylist
     + updatePlaylists
-    + addSong
+    + updateSongsData
     + generatePlaylistsAndSongs
     """
     def __init__(self):
@@ -67,18 +67,22 @@ class DataWriter:
         copyData = self.collectedData["Playlists data"][playlistName]
         del self.collectedData["Playlists data"][playlistName]
         self.collectedData["Playlists data"]["(DELETED) {}".format(playlistName)] = copyData
+        del self.collectedData["Songs data"][playlistName]
 
         self.saveData()
 
-    def updatePlaylists(self, playlists):
-        for playlist in playlists:
-            self.collectedData["Playlists data"][playlist] = playlist.getData()
-
+    def updatePlaylists(self, playlistsDict):
+        for title in playlistsDict:
+            playlist = playlistsDict[title]
+            self.collectedData["Playlists data"][playlist.getTitle()] = playlist.getData()
+            self.playlistsData[title] = playlist.getSongsTitles()
         self.saveData()
 
-    # TODO: implement this
-    def addSong(self):
-        pass
+    def updateSongsData(self, songsDict):
+        for title in songsDict:
+            song = songsDict[title]
+            self.collectedData["Songs data"][title] = song.getData()
+        self.saveData()
 
     def generatePlaylistsAndSongs(self) -> tuple:
         playlistsDict = {}

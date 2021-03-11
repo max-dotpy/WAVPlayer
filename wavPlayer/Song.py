@@ -63,3 +63,8 @@ class Song:
 
     def __str__(self):
         return self.getTitle()
+
+
+class RandomSong(Song):
+    def __init__(self):
+        super().__init__("Random", "0")

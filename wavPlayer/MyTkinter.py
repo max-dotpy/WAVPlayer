@@ -63,23 +63,13 @@ class ProgressBar(Canvas):
         super().__init__(master, height=4, width=width, bd=0, highlightthickness=0, **kw)
         self.master = master
         self.width = width
-        self.progressStep = 1
-        self.currentProgress = 0
 
-    def restart(self, seconds):
-        self.progressStep = self.width // seconds
+    def restart(self):
         self.delete("all")
 
-    def progress(self):
-        x = self.currentProgress
-        x2 = x + self.progressStep
-        if x2 > self.width:
-            x2 = self.width
-        self.create_rectangle(x, 0, x2, 4, fill="#6c6c6c", outline="#6c6c6c")
-        self.currentProgress = x2
-        if x2 == self.width:
-            return
-        self.master.after(1000, self.progress)
+    def progress(self, percentage):
+        x = int(self.width * percentage)
+        self.create_rectangle(0, 0, x, 4, fill="#6c6c6c", outline="#6c6c6c")
 
 
 class ButtonsFrame(Frame):
@@ -87,6 +77,7 @@ class ButtonsFrame(Frame):
         super().__init__(master, width=width, height=height, bg=background)
         self.buttonsPhotos = []
         self.background = background
+        self.displayed = "play"
 
         self.prevButton = self.createBlinkingButton("prev")
         self.prevButton.place(relx=0.37, rely=0.3625)
@@ -98,13 +89,16 @@ class ButtonsFrame(Frame):
         self.nextButton.place(relx=0.58, rely=0.3625)
 
         self.pauseButton = self.createBlinkingButton("pause")
-        # self.pauseButton.place(relx=0.48, rely=0.26)
 
         self.randomButton = self.createStaticButton("random")
         self.randomButton.place(relx=0.26, rely=0.3625)
+        self.randomButton.setCommand(lambda *args: None)
+        self.randomButton.clicked()
 
         self.reloadButton = self.createStaticButton("reload")
         self.reloadButton.place(relx=0.70, rely=0.3625)
+        self.reloadButton.setCommand(lambda *args: None)
+        self.reloadButton.clicked()
 
     def createBlinkingButton(self, name) -> BlinkingButton:
         img = open("{}/{}.png".format(ICONS_PATH, name))
@@ -126,9 +120,6 @@ class ButtonsFrame(Frame):
 
         return StaticButton(self, photo2, photo, bg=self.background)
 
-    def setRandomCommand(self, command):
-        self.randomButton.setCommand(command)
-
     def setPrevCommand(self, command):
         self.prevButton.setCommand(command)
 
@@ -138,16 +129,28 @@ class ButtonsFrame(Frame):
     def setNextCommand(self, command):
         self.nextButton.setCommand(command)
 
-    def setReloadCommand(self, command):
-        self.reloadButton.setCommand(command)
-
     def setPauseCommand(self, command):
         self.pauseButton.setCommand(command)
+
+    def setRandomCommand(self, command):
+        self.randomButton.setCommand(command)
+
+    def switchPausePlay(self):
+        if self.displayed == "play":
+            self.displayed = "pause"
+            self.playButton.place_forget()
+            self.pauseButton.place(relx=0.48, rely=0.26)
+        else:
+            self.displayed = "play"
+            self.pauseButton.place_forget()
+            self.playButton.place(relx=0.48, rely=0.26)
+        self.update()
 
 
 class VolumeBar(Canvas):
     def __init__(self, master):
         super().__init__(master, width=GUI_RIGHTSIDE_WIDTH // 2, height=50, bd=0, highlightthickness=0)
+        self.master = master
         self.create_rectangle(0, 23, GUI_RIGHTSIDE_WIDTH // 2, 27, fill="#969696", outline="#969696")
 
         self.ball = self.create_oval(GUI_RIGHTSIDE_WIDTH // 2 - 13, 19, GUI_RIGHTSIDE_WIDTH // 2 - 1, 31,
@@ -172,11 +175,14 @@ class VolumeBar(Canvas):
         self.ball = self.create_oval(event.x - 6, 19, event.x + 6, 31,
                                      outline="#7f7f7f", fill="white")
 
+        self.event_generate("<<Volume changed>>")
+
     def setToZero(self):
         self.delete(self.ball)
         self.x = 6
         self.create_rectangle(6, 23, GUI_RIGHTSIDE_WIDTH // 2, 27, fill="#c9c9c9", outline="#c9c9c9")
         self.ball = self.create_oval(0, 19, 12, 31, outline="#7f7f7f", fill="white")
+        self.event_generate("<<Volume changed>>")
 
     def setToMax(self):
         self.delete(self.ball)
@@ -184,6 +190,7 @@ class VolumeBar(Canvas):
         self.create_rectangle(0, 23, GUI_RIGHTSIDE_WIDTH // 2 - 7, 27, fill="#969696", outline="#969696")
         self.ball = self.create_oval(GUI_RIGHTSIDE_WIDTH // 2 - 13, 19, GUI_RIGHTSIDE_WIDTH // 2 - 1, 31,
                                      outline="#7f7f7f", fill="white")
+        self.event_generate("<<Volume changed>>")
 
     def getVolumePercentage(self) -> float:
         perc = self.x / self.length

@@ -6,6 +6,7 @@ class Playlist:
     """
     methods:
     + getTitle
+    + setTitle
     + getCreationDate
     + getTimesPlayed
     + getHoursPlayed
@@ -40,6 +41,9 @@ class Playlist:
 
     def getTitle(self) -> str:
         return self.title
+
+    def setTitle(self, title):
+        self.title = title
 
     def getCreationDate(self) -> str:
         return self.creationDate
@@ -87,9 +91,11 @@ class Playlist:
 
     def addSong(self, song):
         self.songs.append(song)
+        song.addedToPlaylist()
         self.addChanges("+", song.getTitle())
 
     def removeSong(self, song):
+        song.removedFromPlaylist()
         del self.songs[self.songs.index(song)]
         self.addChanges("-", song.getTitle())
 

@@ -1,0 +1,117 @@
+{
+    "Playlists data": {
+        "All": {
+            "Creation date": "2021",
+            "Number of times played": 1,
+            "Number of hours played": 0.07548218833075629,
+            "First song": {
+                "Random": 0,
+                "Boku OP4": 0,
+                "Kodocha OP": 1
+            },
+            "Changes history": "+Boku OP4\n+DrStone OP1\n+Kodocha OP"
+        },
+        "Prova": {
+            "Creation date": "2021-03-11 20:32:03.355833",
+            "Number of times played": 3,
+            "Number of hours played": 0.10226334253946939,
+            "First song": {
+                "Kodocha OP": 3
+            },
+            "Changes history": "+ Boku OP4\n+ Kodocha OP\n"
+        },
+        "New": {
+            "Creation date": "2021-03-11 20:42:20.637977",
+            "Number of times played": 12,
+            "Number of hours played": 0.5296604495578341,
+            "First song": {
+                "Eizouken OP": 5,
+                "Eizouken OST": 1,
+                "Haikyuu OP3": 2,
+                "Kodocha OP": 2,
+                "Beastars OP": 2
+            },
+            "Changes history": "+ Beastars OP\n+ Eizouken OP\n+ Eizouken OST\n+ Haikyuu OP3\n+ Kodocha OP\n+ MOB OP2\n+ Renai Circulation\n+ Sailor Moon OP\n+ SchoolRumble OP\n+ Shingeki OP4\n+ SteinsGate OP\n"
+        }
+    },
+    "Songs data": {
+        "Kodocha OP": {
+            "Added date": "2021-03-11 20:17:34.167620",
+            "Number of times played": 7,
+            "Number of hours played": 0.18127689785427517,
+            "Number of playlist it is in": 2
+        },
+        "Boku OP4": {
+            "Added date": "2021-03-11 20:17:34.167687",
+            "Number of times played": 2,
+            "Number of hours played": 0.04914648691813151,
+            "Number of playlist it is in": 1
+        },
+        "DrStone OP1": {
+            "Added date": "2021-03-11 20:17:34.167714",
+            "Number of times played": 1,
+            "Number of hours played": 0.025012245178222654,
+            "Number of playlist it is in": 0
+        },
+        "Beastars OP": {
+            "Added date": "2021-03-11 20:42:18.779642",
+            "Number of times played": 2,
+            "Number of hours played": 0.05002449035644531,
+            "Number of playlist it is in": 1
+        },
+        "SteinsGate OP": {
+            "Added date": "2021-03-11 20:42:18.779704",
+            "Number of times played": 0,
+            "Number of hours played": 0,
+            "Number of playlist it is in": 1
+        },
+        "Sailor Moon OP": {
+            "Added date": "2021-03-11 20:42:18.779721",
+            "Number of times played": 0,
+            "Number of hours played": 0,
+            "Number of playlist it is in": 1
+        },
+        "Haikyuu OP3": {
+            "Added date": "2021-03-11 20:42:18.779737",
+            "Number of times played": 3,
+            "Number of hours played": 0.0749496587117513,
+            "Number of playlist it is in": 1
+        },
+        "Eizouken OP": {
+            "Added date": "2021-03-11 20:42:18.779765",
+            "Number of times played": 6,
+            "Number of hours played": 0.14810113271077474,
+            "Number of playlist it is in": 1
+        },
+        "SchoolRumble OP": {
+            "Added date": "2021-03-11 20:42:18.779790",
+            "Number of times played": 0,
+            "Number of hours played": 0,
+            "Number of playlist it is in": 1
+        },
+        "Eizouken OST": {
+            "Added date": "2021-03-11 20:42:18.779804",
+            "Number of times played": 3,
+            "Number of hours played": 0.07656763076782228,
+            "Number of playlist it is in": 1
+        },
+        "MOB OP2": {
+            "Added date": "2021-03-11 20:42:18.779818",
+            "Number of times played": 1,
+            "Number of hours played": 0.05229569329155816,
+            "Number of playlist it is in": 1
+        },
+        "Renai Circulation": {
+            "Added date": "2021-03-11 20:42:18.779836",
+            "Number of times played": 1,
+            "Number of hours played": 0.025063037872314453,
+            "Number of playlist it is in": 1
+        },
+        "Shingeki OP4": {
+            "Added date": "2021-03-11 20:42:18.779850",
+            "Number of times played": 1,
+            "Number of hours played": 0.024968706766764322,
+            "Number of playlist it is in": 1
+        }
+    }
+}

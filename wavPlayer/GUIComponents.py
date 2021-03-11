@@ -36,19 +36,14 @@ class Table(Frame):
         self.searchEntry = None
         self.playlistListbox = None
         self.songListbox = None
+        self.allSongsListbox = None
         self.plusButton = None
         self.gearButton = None
         self.binButton = None
 
         self.buttonsPhotos = []
         self.currentListbox = "playlist"
-        self.currentPlaylistsTitles = []
-        self.currentSongsTitles = []
-        self.currentPlaylist = None
-        self.playlistsDict = None
-        self.musicPlayer = None
-        self.reloadButton = None
-        self.randomButton = None
+
         self.setLayout()
 
     def setLayout(self):
@@ -69,8 +64,10 @@ class Table(Frame):
         self.songListbox = Listbox(center, height=11, bg="#c2c2c2", bd=0, selectbackground="#a6a6a6",
                                    activestyle=NONE)
 
-        self.songListbox.bind("<ButtonRelease-1>", lambda *args: self.songClicked(
-            self.randomButton.getState(), self.reloadButton.getState()))
+        self.allSongsListbox = Listbox(center, height=11, bg="#c2c2c2", bd=0, selectbackground="#a6a6a6",
+                                       activestyle=NONE, selectmode=MULTIPLE)
+
+        self.songListbox.bind("<ButtonRelease-1>", lambda *args: self.songClicked())
 
         bot = Frame(self, width=210, height=30, bg="#c2c2c2")
         bot.pack(side=BOTTOM, fill=BOTH, expand=True)
@@ -83,8 +80,6 @@ class Table(Frame):
 
         self.binButton = self.createBlinkingButton(bot, "bin")
         self.binButton.place(relx=0.6, rely=0.05)
-
-        self.setReturnEntryCommand(lambda *args: self.searchPlaylistListbox())
 
     def createBlinkingButton(self, master, name) -> BlinkingButton:
         img = open("{}/{}.png".format(ICONS_PATH, name))
@@ -110,12 +105,12 @@ class Table(Frame):
             self.playlistListbox.pack_forget()
             self.songListbox.pack()
             self.currentListbox = "song"
-            self.setReturnEntryCommand(lambda *args: self.searchSongListbox())
+            self.songListbox.bind("<ButtonRelease-1>", lambda *args: self.songClicked())
         else:
             self.songListbox.pack_forget()
             self.playlistListbox.pack()
             self.currentListbox = "playlist"
-            self.setReturnEntryCommand(lambda *args: self.searchPlaylistListbox())
+            self.playlistListbox.bind("<ButtonRelease-1>", lambda *args: self.playlistClicked())
 
     def fillPlaylistListbox(self, titles):
         self.playlistListbox.delete(0, END)
@@ -127,69 +122,50 @@ class Table(Frame):
         for title in titles:
             self.songListbox.insert(END, title)
 
-    def setPlaylistsDict(self, dictionary):
-        self.playlistsDict = dictionary
+    def fillAllSongsListbox(self, titles):
+        self.allSongsListbox.delete(0, END)
+        for title in titles:
+            self.allSongsListbox.insert(END, title)
 
-    def setMusicPlayer(self, musicPlayer):
-        self.musicPlayer = musicPlayer
+    def showAllSongsListbox(self):
+        if self.currentListbox == "playlist":
+            self.playlistListbox.pack_forget()
+            self.allSongsListbox.pack()
+        else:
+            self.songListbox.pack_forget()
+            self.allSongsListbox.pack()
 
-    def setRandomButton(self, button):
-        self.randomButton = button
-
-    def setReloadButton(self, button):
-        self.reloadButton = button
+    def hideAllSongsListbox(self):
+        self.allSongsListbox.pack_forget()
+        if self.currentListbox == "playlist":
+            self.playlistListbox.pack()
+            self.playlistListbox.bind("<ButtonRelease-1>", lambda *args: self.playlistClicked())
+        else:
+            self.songListbox.pack()
+            self.songListbox.bind("<ButtonRelease-1>", lambda *args: self.songClicked())
 
     def setReturnEntryCommand(self, command):
         self.searchEntry.bind("<Return>", command)
 
-    def searchPlaylistListbox(self):
+    def searchListbox(self, complete):
         text = self.searchEntry.get()
         if text == "":
-            self.fillPlaylistListbox(self.currentPlaylistsTitles)
+            if self.currentListbox == "playlist":
+                self.fillPlaylistListbox(complete)
+            else:
+                self.fillSongListbox(complete)
         else:
-            lst = [title for title in self.currentPlaylistsTitles if text.lower() in title.lower()]
-            self.fillPlaylistListbox(lst)
-
-    def searchSongListbox(self):
-        text = self.searchEntry.get()
-        if text == "":
-            self.fillSongListbox(self.currentSongsTitles)
-        else:
-            lst = [title for title in self.currentSongsTitles if text.lower() in title.lower()]
-            self.fillSongListbox(lst)
-
-    def setCurrentPlaylistsTitles(self, titles):
-        self.currentPlaylistsTitles = titles
-
-    def setCurrentSongsTitles(self, titles):
-        self.currentSongsTitles = titles
-
-    def setCurrentPlaylist(self, playlist):
-        self.currentPlaylist = playlist
+            lst = [title for title in complete if text.lower() in title.lower()]
+            if self.currentListbox == "playlist":
+                self.fillPlaylistListbox(lst)
+            else:
+                self.fillSongListbox(lst)
 
     def playlistClicked(self):
-        index = self.playlistListbox.curselection()[0]
-        title = self.currentPlaylistsTitles[index]
-        songs = self.playlistsDict[title].getSongsTitles()
-        self.fillSongListbox(songs)
-        self.setCurrentSongsTitles(songs)
-        self.setCurrentPlaylist(self.playlistsDict[title])
-        self.switchListbox()
+        self.master.event_generate("<<Playlist clicked>>")
 
-        self.playlistsDict[title].played()
-
-    def songClicked(self, randomState, reloadState):
-        index = self.songListbox.curselection()[0]
-        title = self.currentSongsTitles[index]
-        song = self.currentPlaylist.getSongFromTitle(title)
-
-        # TODO: ok abbiamo la first song, crea la playlist, a seconda del reload e del random,
-        # TODO: e poi salva tutti i dati e fai partire
-
-        if randomState:
-            pass
-        else:
-            order = self.currentPlaylist.getOrderedPlaylist()
+    def songClicked(self):
+        self.master.event_generate("<<Song clicked>>")
 
 
 class Controls(Frame):
@@ -197,6 +173,7 @@ class Controls(Frame):
     methods:
     + setLayout
     + statisticsCommand
+    + setTitleOfSong
     """
     def __init__(self, master, **kw):
         super().__init__(master, **kw)
@@ -231,12 +208,18 @@ class Controls(Frame):
         bottomFrame.pack(side=BOTTOM, pady=40, padx=150, fill=X)
         self.fadeButton = TextButton(bottomFrame, "#e7e7e7", "#bbbbba", text="Fade and exit")
         self.fadeButton.pack(side=LEFT, padx=10)
+        self.fadeButton.setCommand(lambda *args: self.event_generate("<<Fade and exit>>"))
         self.statisticsButton = TextButton(bottomFrame, "#e7e7e7", "#bbbbba", text="Statistics")
         self.statisticsButton.pack(side=LEFT)
+        self.statisticsButton.setCommand(lambda *args: self.statisticsCommand())
 
-    # TODO: implement this
     def statisticsCommand(self):
-        pass
+        self.event_generate("<<Statistics clicked>>")
+
+    def setTitleOfSong(self, title):
+        self.titleLabel.configure(text="")
+        self.titleLabel.update()
+        self.titleLabel.configure(text=title)
 
 
 class GUI:

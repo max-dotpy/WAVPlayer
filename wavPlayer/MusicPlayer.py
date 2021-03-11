@@ -16,15 +16,12 @@ class MusicPlayer:
     + fadeAndExit
     + getLengthOfSong
     + getPercentagePlayed
+    + getMinutesPlayed
     """
     def __init__(self):
         mixer.init()
         self.mixer = mixer.music
         self.sound = None
-        # TODO: modify so that it loads a random song
-        self.load("{}/Boku OP4.wav".format(WAV_DIRECTORY_PATH))
-        self.play()
-        self.pause()
 
     def load(self, path):
         self.mixer.load(path)
@@ -66,6 +63,11 @@ class MusicPlayer:
             return self.mixer.get_pos() / 1000 / self.getLengthOfSong()
         except AttributeError:
             return 0
+
+    def getMinutesPlayed(self) -> float:
+        length = self.getLengthOfSong()
+        percentage = self.getPercentagePlayed()
+        return length * percentage / 60
 
 
 if __name__ == '__main__':

@@ -1,8 +1,12 @@
-# TODO: generalize the paths
-WAV_DIRECTORY_PATH = "/Users/max/PycharmProjects/WAVplayer/wavFiles"
-PLAYLISTS_DATA_PATH = "/Users/max/PycharmProjects/WAVplayer/userData/playlistsData.json"
-COLLECTED_DATA_PATH = "/Users/max/PycharmProjects/WAVplayer/userData/collectedData.json"
-ICONS_PATH = "/Users/max/PycharmProjects/WAVplayer/resources/icons"
+from pathlib import Path
+from os.path import split, join
+
+
+BASE_DIRECTORY = split(split(Path(__file__))[0])[0]
+WAV_DIRECTORY_PATH = join(BASE_DIRECTORY, "wavFiles")
+PLAYLISTS_DATA_PATH = join(BASE_DIRECTORY, "userData", "playlistsData.json")
+COLLECTED_DATA_PATH = join(BASE_DIRECTORY, "userData", "collectedData.json")
+ICONS_PATH = join(BASE_DIRECTORY, "resources", "icons")
 
 GUI_HEIGHT = 260
 GUI_WIDTH = 710

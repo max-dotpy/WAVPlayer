@@ -40,6 +40,7 @@ class Table(Frame):
         self.plusButton = None
         self.gearButton = None
         self.binButton = None
+        self.swap = False
 
         self.buttonsPhotos = []
         self.currentListbox = "playlist"
@@ -74,12 +75,15 @@ class Table(Frame):
 
         self.plusButton = self.createBlinkingButton(bot, "plus")
         self.plusButton.place(relx=0.28, rely=0.15)
+        self.plusButton.setCommand(lambda *args: self.buttonClicked("Add"))
 
         self.gearButton = self.createBlinkingButton(bot, "gear")
         self.gearButton.place(relx=0.43)
+        self.gearButton.setCommand(lambda *args: self.buttonClicked("Gear"))
 
         self.binButton = self.createBlinkingButton(bot, "bin")
         self.binButton.place(relx=0.6, rely=0.05)
+        self.binButton.setCommand(lambda *args: self.buttonClicked("Bin"))
 
     def createBlinkingButton(self, master, name) -> BlinkingButton:
         img = open("{}/{}.png".format(ICONS_PATH, name))
@@ -100,17 +104,23 @@ class Table(Frame):
     def setBinButtonCommand(self, command):
         self.binButton.setCommand(command)
 
+    def setPlaylistListboxCommand(self, command):
+        self.playlistListbox.bind("<ButtonRelease-1>", command)
+
+    def setSongListboxCommand(self, command):
+        self.songListbox.bind("<ButtonRelease-1>", command)
+
     def switchListbox(self):
         if self.currentListbox == "playlist":
             self.playlistListbox.pack_forget()
             self.songListbox.pack()
             self.currentListbox = "song"
-            self.songListbox.bind("<ButtonRelease-1>", lambda *args: self.songClicked())
+            self.setSongListboxCommand(lambda *args: self.songClicked())
         else:
             self.songListbox.pack_forget()
             self.playlistListbox.pack()
             self.currentListbox = "playlist"
-            self.playlistListbox.bind("<ButtonRelease-1>", lambda *args: self.playlistClicked())
+            self.setPlaylistListboxCommand(lambda *args: self.playlistClicked())
 
     def fillPlaylistListbox(self, titles):
         self.playlistListbox.delete(0, END)
@@ -166,6 +176,27 @@ class Table(Frame):
 
     def songClicked(self):
         self.master.event_generate("<<Song clicked>>")
+
+    def buttonClicked(self, nameOfButton):
+        if self.currentListbox == "playlist":
+            self.master.event_generate("<<{}Playlist clicked>>".format(nameOfButton))
+        else:
+            self.master.event_generate("<<{}Song clicked>>".format(nameOfButton))
+
+    def swapSongsOrder(self):
+        lst = self.songListbox.curselection()
+        if not self.swap:
+            self.swap = True
+            return
+        indexFirst = lst[0]
+        indexSecond = lst[1]
+        songs = list(self.songListbox.get(0, END))
+        copy = songs[indexFirst]
+        songs[indexFirst] = songs[indexSecond]
+        songs[indexSecond] = copy
+        self.fillSongListbox(songs)
+        self.update()
+        self.swap = False
 
 
 class Controls(Frame):

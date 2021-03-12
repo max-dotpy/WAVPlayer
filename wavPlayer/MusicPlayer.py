@@ -1,10 +1,8 @@
 from pygame import mixer
-from wavPlayer.constants import WAV_DIRECTORY_PATH
 
 
 class MusicPlayer:
     """
-    methods:
     + load
     + play
     + pause
@@ -49,11 +47,10 @@ class MusicPlayer:
     def changeVolume(self, volume):
         self.mixer.set_volume(volume)
 
-    # TODO: check how to implement below method
-    def fadeAndExit(self, time):
-        pass
-    #     self.mixer.fadeout(time)
-    #     self.root.after(time, self.root.destroy)
+    def fadeAndExit(self, root):
+        time = int(self.getLengthOfSong() * (1 - self.getPercentagePlayed())) * 1000
+        self.mixer.fadeout(time)
+        root.after(time, root.destroy)
 
     def getLengthOfSong(self) -> float:
         return self.sound.get_length()

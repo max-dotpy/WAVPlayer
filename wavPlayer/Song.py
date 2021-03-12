@@ -3,20 +3,20 @@ from wavPlayer.constants import WAV_DIRECTORY_PATH
 
 class Song:
     """
-    methods:
     + getTitle
     + getAddedDate
     + getTimesPlayed
     + getHoursPlayed
     + getNumberOfPlaylist
     + getSongPath
+    + getData
     + played
     + playedFor
     + addedToPlaylist
     + removedFromPlaylist
-    + getData
     """
-    def __init__(self, title, addedDate, timesPlayed=0, hoursPlayed=0, numberOfPlaylist=0):
+
+    def __init__(self, title: str, addedDate: str, timesPlayed=0, hoursPlayed=0, numberOfPlaylist=0):
         self.title = title
         self.addedDate = addedDate
         self.timesPlayed = timesPlayed
@@ -41,10 +41,16 @@ class Song:
     def getSongPath(self) -> str:
         return "{}/{}.wav".format(WAV_DIRECTORY_PATH, self.getTitle())
 
+    def getData(self) -> dict:
+        return {"Added date": self.getAddedDate(),
+                "Number of times played": self.getTimesPlayed(),
+                "Number of hours played": self.getHoursPlayed(),
+                "Number of playlists it is in": self.getNumberOfPlaylist()}
+
     def played(self):
         self.timesPlayed += 1
 
-    def playedFor(self, minutes):
+    def playedFor(self, minutes: float):
         self.hoursPlayed += minutes / 60
 
     def addedToPlaylist(self):
@@ -52,19 +58,18 @@ class Song:
 
     def removedFromPlaylist(self):
         if self.numberOfPlaylist == 0:
-            raise MemoryError
+            return
         self.numberOfPlaylist -= 1
-
-    def getData(self) -> dict:
-        return {"Added date": self.getAddedDate(),
-                "Number of times played": self.getTimesPlayed(),
-                "Number of hours played": self.getHoursPlayed(),
-                "Number of playlist it is in": self.getNumberOfPlaylist()}
 
     def __str__(self):
         return self.getTitle()
 
-
-class RandomSong(Song):
-    def __init__(self):
-        super().__init__("Random", "0")
+    def __eq__(self, other):
+        if not isinstance(other, Song):
+            return False
+        return \
+            self.getTitle() == other.getTitle() and \
+            self.getAddedDate() == other.getAddedDate() and \
+            self.getTimesPlayed() == other.getTimesPlayed() and \
+            self.getHoursPlayed() == other.getHoursPlayed() and \
+            self.getNumberOfPlaylist() == other.getNumberOfPlaylist()

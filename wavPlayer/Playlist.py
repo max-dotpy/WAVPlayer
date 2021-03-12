@@ -4,9 +4,8 @@ from random import shuffle
 
 class Playlist:
     """
-    methods:
-    + getTitle
     + setTitle
+    + getTitle
     + getCreationDate
     + getTimesPlayed
     + getHoursPlayed
@@ -16,6 +15,9 @@ class Playlist:
     + getNumberOfSongs
     + getFirstSongDict
     + getChangesHistory
+    + getRandomizedPlaylist
+    + getOrderedPlaylist
+    + getData
     + played
     + playedFor
     + firstSongPicked
@@ -23,14 +25,10 @@ class Playlist:
     + addSong
     + removeSong
     + isDeleted
-    + getRandomizedPlaylist
-    + getOrderedPlaylist
-    + getData
+    + changeOrder
     """
     def __init__(self, title, creationDate, timesPlayed=0,
                  hoursPlayed=0, songs=None, firstSong=None, changesHistory=""):
-        if title.startswith("(DELETED)"):
-            raise KeyError
         self.title = title
         self.creationDate = creationDate
         self.timesPlayed = timesPlayed
@@ -39,11 +37,11 @@ class Playlist:
         self.firstSongDict = {} if firstSong is None else firstSong
         self.changesHistory = changesHistory
 
-    def getTitle(self) -> str:
-        return self.title
-
     def setTitle(self, title):
         self.title = title
+
+    def getTitle(self) -> str:
+        return self.title
 
     def getCreationDate(self) -> str:
         return self.creationDate
@@ -64,6 +62,7 @@ class Playlist:
         for song in self.getSongs():
             if song.getTitle() == title:
                 return song
+        raise KeyError("There's no song with that title in the playlist.")
 
     def getNumberOfSongs(self) -> int:
         return len(self.songs)
@@ -73,6 +72,25 @@ class Playlist:
 
     def getChangesHistory(self) -> str:
         return self.changesHistory
+
+    def getRandomizedPlaylist(self, firstSong) -> list:
+        lst = [firstSong]
+        titles = self.getSongsTitles()
+        del titles[titles.index(firstSong)]
+        shuffle(titles)
+        return lst + titles
+
+    def getOrderedPlaylist(self, firstSong) -> list:
+        titles = self.getSongsTitles()
+        index = titles.index(firstSong)
+        return titles[index:] + titles[:index]
+
+    def getData(self) -> dict:
+        return {"Creation date": self.getCreationDate(),
+                "Number of times played": self.getTimesPlayed(),
+                "Number of hours played": self.getHoursPlayed(),
+                "First song": self.getFirstSongDict(),
+                "Changes history": self.getChangesHistory()}
 
     def played(self):
         self.timesPlayed += 1
@@ -102,24 +120,16 @@ class Playlist:
     def isDeleted(self) -> bool:
         return self.getTitle().startswith("(DELETED)")
 
-    def getRandomizedPlaylist(self, firstSong) -> list:
-        lst = [firstSong]
-        titles = self.getSongsTitles()
-        del titles[titles.index(firstSong)]
-        shuffle(titles)
-        return lst + titles
-
-    def getOrderedPlaylist(self, firstSong) -> list:
-        titles = self.getSongsTitles()
-        index = titles.index(firstSong)
-        return titles[index:] + titles[:index]
-
-    def getData(self) -> dict:
-        return {"Creation date": self.getCreationDate(),
-                "Number of times played": self.getTimesPlayed(),
-                "Number of hours played": self.getHoursPlayed(),
-                "First song": self.getFirstSongDict(),
-                "Changes history": self.getChangesHistory()}
+    def changeOrder(self, newOrder: list):
+        """
+        :param newOrder: list containing titles of songs
+        """
+        songs = self.getSongs()
+        oldOrder = self.getSongsTitles()
+        newSongs = []
+        for title in newOrder:
+            newSongs.append(songs[oldOrder.index(title)])
+        self.songs = newSongs
 
     def __str__(self) -> str:
         return self.getTitle()

@@ -23,14 +23,23 @@ class DataWriter:
                 self.playlistsData = json.load(playlistsDataFile)
         except FileNotFoundError:
             with open(PLAYLISTS_DATA_PATH, "w") as playlistsDataFile:
-                json.dump({}, playlistsDataFile, indent=4)
+                json.dump({"All": []}, playlistsDataFile, indent=4)
+            self.__init__()
 
         try:
             with open(COLLECTED_DATA_PATH) as collectedDataFile:
                 self.collectedData = json.load(collectedDataFile)
         except FileNotFoundError:
             with open(COLLECTED_DATA_PATH, "w") as collectedDataFile:
-                json.dump({"Playlists data": {}, "Songs data": {}}, collectedDataFile, indent=4)
+                json.dump({"Playlists data": {"All": {
+                                              "Creation date": str(date.today()),
+                                              "Number of times played": 0,
+                                              "Number of hours played": 0,
+                                              "First song": {},
+                                              "Changes history": ""
+                                              }
+                                              }, "Songs data": {}}, collectedDataFile, indent=4)
+            self.__init__()
 
     def saveData(self):
         with open(PLAYLISTS_DATA_PATH, "w") as playlistsDataFile:
@@ -63,11 +72,9 @@ class DataWriter:
         if playlistName not in self.playlistsData:
             raise KeyError
         del self.playlistsData[playlistName]
-
         copyData = self.collectedData["Playlists data"][playlistName]
         del self.collectedData["Playlists data"][playlistName]
         self.collectedData["Playlists data"]["(DELETED) {}".format(playlistName)] = copyData
-        del self.collectedData["Songs data"][playlistName]
 
         self.saveData()
 
@@ -94,12 +101,13 @@ class DataWriter:
                 addedDate = data["Added date"]
                 timesPlayed = data["Number of times played"]
                 hoursPlayed = data["Number of hours played"]
-                numberOfPlaylist = data["Number of playlist it is in"]
+                numberOfPlaylist = data["Number of playlists it is in"]
             else:
                 addedDate = str(date.today())
                 timesPlayed = 0
                 hoursPlayed = 0
                 numberOfPlaylist = 0
+                self.playlistsData["All"].append(title)
 
             songsDict[title] = Song(title, addedDate, timesPlayed, hoursPlayed, numberOfPlaylist)
 
@@ -116,3 +124,14 @@ class DataWriter:
                                             songsClasses, firstSong, changesHistory)
 
         return playlistsDict, songsDict
+
+    def changeNameOfPlaylist(self, oldName, newName):
+        data = self.collectedData["Playlists data"][oldName]
+        self.collectedData["Playlists data"][newName] = data
+        del self.collectedData["Playlists data"][oldName]
+
+        data = self.playlistsData[oldName]
+        self.playlistsData[newName] = data
+        del self.playlistsData[oldName]
+
+        self.saveData()

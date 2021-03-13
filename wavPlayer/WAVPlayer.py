@@ -367,7 +367,7 @@ if __name__ == '__main__':
     from tkinter import Tk
 
     root = Tk()
-    root.geometry("{}x{}+720+100".format(GUI_WIDTH, GUI_HEIGHT))
+    root.geometry("{}x{}+720+100".format(GUI_WIDTH, GUI_HEIGHT))  # TODO: rendi fisso
     root.title("")
 
     player = WAVPlayer(root)

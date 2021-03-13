@@ -1,10 +1,14 @@
-from tkinter import Label, Canvas, Frame
-from wavPlayer.constants import ICONS_PATH, GUI_RIGHTSIDE_WIDTH
-from PIL.Image import open
-from PIL.ImageTk import PhotoImage
+from tkinter import Label, Canvas
 
 
+# This is an image button that changes image when clicked. When the click is released the
+# image changes back and the command runs.
 class BlinkingButton(Label):
+    """
+    + setCommand
+    + clicked
+    + unclicked
+    """
     def __init__(self, master, normal, click, **kw):
         self.normal = normal
         self.click = click
@@ -26,28 +30,26 @@ class BlinkingButton(Label):
         self.command()
 
 
-class StaticButton(Label):
+# This is an image button that changes image when clicked. When the click is released the
+# image doesn't change back and the command runs. The image changes back when clicked a second time.
+class StaticButton(BlinkingButton):
+    """
+    + setCommand
+    + clicked
+    + unclicked
+    + getState
+    """
     def __init__(self, master, normal, click, **kw):
-        self.normal = normal
-        self.click = click
+        super().__init__(master, normal, click, **kw)
         self.state = 0
 
-        super().__init__(master, image=self.normal, **kw)
-        self.command = lambda *args: print("Working")
-
-        self.bind('<Button-1>', lambda *args: self.clicked())
-        self.bind('<ButtonRelease-1>', lambda *args: self.unclicked())
-
-    def setCommand(self, command):
-        self.command = command
-
     def clicked(self):
-        if self.state == 0:
-            self.configure(image=self.click)
-            self.state = 1
-        else:
+        if self.state:
             self.configure(image=self.normal)
             self.state = 0
+        else:
+            self.configure(image=self.click)
+            self.state = 1
 
     def unclicked(self):
         self.command()
@@ -58,175 +60,14 @@ class StaticButton(Label):
         return False
 
 
-class ProgressBar(Canvas):
-    def __init__(self, master, width, **kw):
-        super().__init__(master, height=4, width=width, bd=0, highlightthickness=0, **kw)
-        self.master = master
-        self.width = width
-
-    def restart(self):
-        self.delete("all")
-
-    def progress(self, percentage):
-        x = int(self.width * percentage)
-        self.create_rectangle(0, 0, x, 4, fill="#6c6c6c", outline="#6c6c6c")
-
-
-class ButtonsFrame(Frame):
-    def __init__(self, master, width, height, background):
-        super().__init__(master, width=width, height=height, bg=background)
-        self.buttonsPhotos = []
-        self.background = background
-        self.displayed = "play"
-
-        self.prevButton = self.createBlinkingButton("prev")
-        self.prevButton.place(relx=0.37, rely=0.3625)
-
-        self.playButton = self.createBlinkingButton("play")
-        self.playButton.place(relx=0.48, rely=0.26)
-
-        self.nextButton = self.createBlinkingButton("next")
-        self.nextButton.place(relx=0.58, rely=0.3625)
-
-        self.pauseButton = self.createBlinkingButton("pause")
-
-        self.randomButton = self.createStaticButton("random")
-        self.randomButton.place(relx=0.26, rely=0.3625)
-        self.randomButton.setCommand(lambda *args: None)
-        self.randomButton.clicked()
-
-        self.reloadButton = self.createStaticButton("reload")
-        self.reloadButton.place(relx=0.70, rely=0.3625)
-        self.reloadButton.setCommand(lambda *args: None)
-        self.reloadButton.clicked()
-
-    def createBlinkingButton(self, name) -> BlinkingButton:
-        img = open("{}/{}.png".format(ICONS_PATH, name))
-        photo = PhotoImage(img)
-        img2 = open("{}/{}_clicked.png".format(ICONS_PATH, name))
-        photo2 = PhotoImage(img2)
-        self.buttonsPhotos.append(photo)
-        self.buttonsPhotos.append(photo2)
-
-        return BlinkingButton(self, photo, photo2, bg=self.background)
-
-    def createStaticButton(self, name) -> StaticButton:
-        img = open("{}/{}_enabled.png".format(ICONS_PATH, name))
-        photo = PhotoImage(img)
-        img2 = open("{}/{}_disabled.png".format(ICONS_PATH, name))
-        photo2 = PhotoImage(img2)
-        self.buttonsPhotos.append(photo)
-        self.buttonsPhotos.append(photo2)
-
-        return StaticButton(self, photo2, photo, bg=self.background)
-
-    def setPrevCommand(self, command):
-        self.prevButton.setCommand(command)
-
-    def setPlayCommand(self, command):
-        self.playButton.setCommand(command)
-
-    def setNextCommand(self, command):
-        self.nextButton.setCommand(command)
-
-    def setPauseCommand(self, command):
-        self.pauseButton.setCommand(command)
-
-    def setRandomCommand(self, command):
-        self.randomButton.setCommand(command)
-
-    def switchPausePlay(self):
-        if self.displayed == "play":
-            self.displayed = "pause"
-            self.playButton.place_forget()
-            self.pauseButton.place(relx=0.48, rely=0.26)
-        else:
-            self.displayed = "play"
-            self.pauseButton.place_forget()
-            self.playButton.place(relx=0.48, rely=0.26)
-        self.update()
-
-
-class VolumeBar(Canvas):
-    def __init__(self, master):
-        super().__init__(master, width=GUI_RIGHTSIDE_WIDTH // 2, height=50, bd=0, highlightthickness=0)
-        self.master = master
-        self.create_rectangle(0, 23, GUI_RIGHTSIDE_WIDTH // 2, 27, fill="#969696", outline="#969696")
-
-        self.ball = self.create_oval(GUI_RIGHTSIDE_WIDTH // 2 - 13, 19, GUI_RIGHTSIDE_WIDTH // 2 - 1, 31,
-                                     outline="#7f7f7f", fill="white")
-
-        self.length = GUI_RIGHTSIDE_WIDTH // 2 - 7
-        self.x = GUI_RIGHTSIDE_WIDTH // 2 - 7
-
-        self.bind("<B1-Motion>", self.moveBall)
-
-    def moveBall(self, event):
-        self.delete(self.ball)
-        if event.x < 6:
-            event.x = 6
-        if event.x > GUI_RIGHTSIDE_WIDTH // 2 - 7:
-            event.x = GUI_RIGHTSIDE_WIDTH // 2 - 7
-        self.x = event.x
-
-        self.create_rectangle(0, 23, event.x, 27, fill="#969696", outline="#969696")
-        self.create_rectangle(event.x, 23, GUI_RIGHTSIDE_WIDTH // 2, 27, fill="#c9c9c9", outline="#c9c9c9")
-
-        self.ball = self.create_oval(event.x - 6, 19, event.x + 6, 31,
-                                     outline="#7f7f7f", fill="white")
-
-        self.event_generate("<<Volume changed>>")
-
-    def setToZero(self):
-        self.delete(self.ball)
-        self.x = 6
-        self.create_rectangle(6, 23, GUI_RIGHTSIDE_WIDTH // 2, 27, fill="#c9c9c9", outline="#c9c9c9")
-        self.ball = self.create_oval(0, 19, 12, 31, outline="#7f7f7f", fill="white")
-        self.event_generate("<<Volume changed>>")
-
-    def setToMax(self):
-        self.delete(self.ball)
-        self.x = GUI_RIGHTSIDE_WIDTH // 2 - 7
-        self.create_rectangle(0, 23, GUI_RIGHTSIDE_WIDTH // 2 - 7, 27, fill="#969696", outline="#969696")
-        self.ball = self.create_oval(GUI_RIGHTSIDE_WIDTH // 2 - 13, 19, GUI_RIGHTSIDE_WIDTH // 2 - 1, 31,
-                                     outline="#7f7f7f", fill="white")
-        self.event_generate("<<Volume changed>>")
-
-    def getVolumePercentage(self) -> float:
-        perc = self.x / self.length
-        if perc < 0.03:
-            return 0
-        return perc
-
-
-class VolumeFrame(Frame):
-    def __init__(self, master):
-        super().__init__(master, width=GUI_RIGHTSIDE_WIDTH, height=50)
-        self.buttonsPhotos = []
-
-        self.lowVolumeButton = self.createBlinkingButton(self, "volume_low")
-        self.highVolumeButton = self.createBlinkingButton(self, "volume_high")
-        self.volumeBar = VolumeBar(self)
-
-        self.volumeBar.place(relx=0.25)
-        self.lowVolumeButton.place(relx=0.19, rely=0.367)
-        self.highVolumeButton.place(relx=0.78, rely=0.34)
-
-        self.lowVolumeButton.setCommand(self.volumeBar.setToZero)
-        self.highVolumeButton.setCommand(self.volumeBar.setToMax)
-
-    def createBlinkingButton(self, master, name) -> BlinkingButton:
-        img = open("{}/{}.png".format(ICONS_PATH, name))
-        photo = PhotoImage(img)
-        img2 = open("{}/{}_clicked.png".format(ICONS_PATH, name))
-        photo2 = PhotoImage(img2)
-        self.buttonsPhotos.append(photo)
-        self.buttonsPhotos.append(photo2)
-
-        return BlinkingButton(master, photo, photo2, bg="white")
-
-
+# This is a text button that changes background color when clicked.
+# It changes back and run its command when unclicked.
 class TextButton(Label):
+    """
+    + setCommand
+    + clicked
+    + unclicked
+    """
     def __init__(self, master, background, backgroundClicked, **kw):
         super().__init__(master, bg=background, **kw)
 
@@ -249,19 +90,83 @@ class TextButton(Label):
         self.command()
 
 
+# A simple progress bar that progresses when the progress method is called.
+class ProgressBar(Canvas):
+    """
+    + restart
+    + progress
+    """
+    def __init__(self, master, width, color="#6c6c6c", **kw):
+        super().__init__(master, height=4, width=width, bd=0, highlightthickness=0, **kw)
+        self.master = master
+        self.width = width
+        self.color = color
+
+    def restart(self):
+        self.delete("all")
+
+    def progress(self, percentage):
+        x = int(self.width * percentage)
+        self.create_rectangle(0, 0, x, 4, fill=self.color, outline=self.color)
 
 
+# Volume bar widget.
+class VolumeBar(Canvas):
+    """
+    + drawBall
+    + moveBall
+    + setToZero
+    + setToMax
+    + getVolumePercentage
+    """
+    def __init__(self, master, width, ballOutline="#7f7f7f", ballFill="white", dark="#969696", light="#c9c9c9", **kw):
+        super().__init__(master, width=width, height=50, bd=0, highlightthickness=0, **kw)
+        self.master = master
+        self.width = width
+        self.ballOutline = ballOutline
+        self.ballFill = ballFill
+        self.dark = dark
+        self.light = light
 
+        self.ball = None
+        self.length = width - 7
+        self.x = width - 7
 
-if __name__ == '__main__':
-    from tkinter import Tk
+        # The volume is at first set to Max.
+        self.setToMax()
+        self.bind("<B1-Motion>", self.moveBall)
 
-    root = Tk()
-    root.geometry("500x260+720+100")
+    def drawBall(self, x1, x2):
+        self.ball = self.create_oval(x1, 19, x2, 31, outline=self.ballOutline, fill=self.ballFill)
 
-    c = VolumeFrame(root)
-    c.pack()
+    def moveBall(self, event):
+        self.delete(self.ball)
+        if event.x < 6:
+            event.x = 6
+        if event.x > self.width - 7:
+            event.x = self.width - 7
+        self.x = event.x
+        self.create_rectangle(0, 23, event.x, 27, fill=self.dark, outline=self.dark)
+        self.create_rectangle(event.x, 23, self.width, 27, fill=self.light, outline=self.light)
+        self.drawBall(event.x - 6, event.x + 6)
+        self.event_generate("<<Volume changed>>")
 
-    TextButton(root, "#E7E7E7", "#BBBBBA", text="Statistics").pack()
+    def setToZero(self):
+        self.delete(self.ball)
+        self.x = 6
+        self.create_rectangle(6, 23, self.width, 27, fill=self.light, outline=self.light)
+        self.drawBall(0, 12)
+        self.event_generate("<<Volume changed>>")
 
-    root.mainloop()
+    def setToMax(self):
+        self.delete(self.ball)
+        self.x = self.width - 7
+        self.create_rectangle(0, 23, self.width - 7, 27, fill=self.dark, outline=self.dark)
+        self.drawBall(self.width - 13, self.width - 1)
+        self.event_generate("<<Volume changed>>")
+
+    def getVolumePercentage(self) -> float:
+        perc = self.x / self.length
+        if perc < 0.03:
+            return 0
+        return perc

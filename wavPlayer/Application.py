@@ -1,12 +1,12 @@
 from wavPlayer.WAVPlayer import WAVPlayer
 from tkinter import Tk
-from wavPlayer.constants import GUI_HEIGHT, GUI_WIDTH
+from wavPlayer.constants import GUI_HEIGHT, GUI_WIDTH, GUI_X_OFFSET, GUI_Y_OFFSET
 
 
 class Application:
     def __init__(self):
         self.root = Tk()
-        self.root.geometry("{}x{}+720+100".format(GUI_WIDTH, GUI_HEIGHT))
+        self.root.geometry("{}x{}+{}+{}".format(GUI_WIDTH, GUI_HEIGHT, GUI_X_OFFSET, GUI_Y_OFFSET))
         self.root.minsize(GUI_WIDTH, GUI_HEIGHT)
         self.root.maxsize(GUI_WIDTH, GUI_HEIGHT)
         self.root.title("")

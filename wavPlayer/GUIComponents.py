@@ -139,7 +139,6 @@ class Table(Frame):
     + buttonClicked
     + swapSongsOrder
     """
-
     def __init__(self, master, **kw):
         super().__init__(master, width=GUI_LEFTSIDE_WIDTH, height=GUI_HEIGHT, **kw)
 

@@ -4,8 +4,9 @@ from os.path import split, join
 
 BASE_DIRECTORY = split(split(Path(__file__))[0])[0]
 WAV_DIRECTORY_PATH = join(BASE_DIRECTORY, "wavFiles")
-PLAYLISTS_DATA_PATH = join(BASE_DIRECTORY, "userData", "playlistsData.json")
-COLLECTED_DATA_PATH = join(BASE_DIRECTORY, "userData", "collectedData.json")
+USERDATA_PATH = join(BASE_DIRECTORY, "userData")
+PLAYLISTS_DATA_PATH = join(USERDATA_PATH, "playlistsData.json")
+COLLECTED_DATA_PATH = join(USERDATA_PATH, "collectedData.json")
 ICONS_PATH = join(BASE_DIRECTORY, "resources", "icons")
 
 # Paths needed for tests

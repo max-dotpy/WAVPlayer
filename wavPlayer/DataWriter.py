@@ -1,10 +1,19 @@
 from wavPlayer.Playlist import Playlist
 from wavPlayer.Song import Song
-from wavPlayer.constants import PLAYLISTS_DATA_PATH, COLLECTED_DATA_PATH, WAV_DIRECTORY_PATH
+from wavPlayer.constants import PLAYLISTS_DATA_PATH, COLLECTED_DATA_PATH, WAV_DIRECTORY_PATH, USERDATA_PATH
 from datetime import datetime as date
 from glob import glob
 from pathlib import Path
+from os.path import exists
+from os import makedirs
 import json
+
+
+def checkDirectoriesExist():
+    if not exists(WAV_DIRECTORY_PATH):
+        makedirs(WAV_DIRECTORY_PATH)
+    if not exists(USERDATA_PATH):
+        makedirs(USERDATA_PATH)
 
 
 class DataWriter:
@@ -17,6 +26,7 @@ class DataWriter:
     + generatePlaylistsAndSongs
     """
     def __init__(self, playlistPath=PLAYLISTS_DATA_PATH, collectedDataPath=COLLECTED_DATA_PATH):
+        checkDirectoriesExist()
         self.playlistPath = playlistPath
         self.collectedDataPath = collectedDataPath
         # Loads the playlistData json file and if it can't be found, it will be created

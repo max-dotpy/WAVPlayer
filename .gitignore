@@ -1,2 +1,57 @@
 venv
 wavFiles
+userData/collectedData.json
+userData/playlistsData.json
+.gitignore
+.DS_Store
+.AppleDouble
+.LSOverride
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environments
+# .env
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*
+
+adaptData.py

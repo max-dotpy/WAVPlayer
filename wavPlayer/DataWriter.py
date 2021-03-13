@@ -9,89 +9,92 @@ import json
 
 class DataWriter:
     """
-    methods:
     + saveData
-    + addNewPlaylist
+    + changeNameOfPlaylist
     + removePlaylist
     + updatePlaylists
     + updateSongsData
     + generatePlaylistsAndSongs
     """
-    def __init__(self):
+    def __init__(self, playlistPath=PLAYLISTS_DATA_PATH, collectedDataPath=COLLECTED_DATA_PATH):
+        self.playlistPath = playlistPath
+        self.collectedDataPath = collectedDataPath
+        # Loads the playlistData json file and if it can't be found, it will be created
         try:
-            with open(PLAYLISTS_DATA_PATH) as playlistsDataFile:
+            with open(playlistPath) as playlistsDataFile:
                 self.playlistsData = json.load(playlistsDataFile)
         except FileNotFoundError:
-            with open(PLAYLISTS_DATA_PATH, "w") as playlistsDataFile:
+            with open(playlistPath, "w") as playlistsDataFile:
                 json.dump({"All": []}, playlistsDataFile, indent=4)
             self.__init__()
 
+        # Loads the collectedData json file and if it can't be found, it will be created
         try:
-            with open(COLLECTED_DATA_PATH) as collectedDataFile:
+            with open(collectedDataPath) as collectedDataFile:
                 self.collectedData = json.load(collectedDataFile)
         except FileNotFoundError:
-            with open(COLLECTED_DATA_PATH, "w") as collectedDataFile:
-                json.dump({"Playlists data": {"All": {
-                                              "Creation date": str(date.today()),
-                                              "Number of times played": 0,
-                                              "Number of hours played": 0,
-                                              "First song": {},
-                                              "Changes history": ""
-                                              }
-                                              }, "Songs data": {}}, collectedDataFile, indent=4)
+            with open(collectedDataPath, "w") as collectedDataFile:
+                json.dump({
+                    "Playlists data": {
+                        "All": {
+                            "Creation date": str(date.today()),
+                            "Number of times played": 0,
+                            "Number of hours played": 0,
+                            "First song": {},
+                            "Changes history": ""
+                        }
+                    },
+                    "Songs data": {}}, collectedDataFile, indent=4)
             self.__init__()
 
     def saveData(self):
-        with open(PLAYLISTS_DATA_PATH, "w") as playlistsDataFile:
+        with open(self.playlistPath, "w") as playlistsDataFile:
             json.dump(self.playlistsData, playlistsDataFile, indent=4)
 
-        with open(COLLECTED_DATA_PATH, "w") as collectedDataFile:
+        with open(self.collectedDataPath, "w") as collectedDataFile:
             json.dump(self.collectedData, collectedDataFile, indent=4)
 
-    def addNewPlaylist(self, playlist):
-        if playlist.getTitle() in self.playlistsData:
-            raise KeyError
-        titles = playlist.getSongsTitles()
-        self.playlistsData[playlist.getTitle()] = titles
+    def changeNameOfPlaylist(self, oldName: str, newName: str):
+        if oldName not in self.playlistsData:
+            raise ValueError("Playlist {} doesn't exist.".format(oldName))
 
-        firstChangesHistory = ""
-        for title in titles:
-            firstChangesHistory += "+ {}\n".format(title)
+        # Changes the playlist name in the collectedData json file, keeping its stats.
+        data = self.collectedData["Playlists data"][oldName]
+        self.collectedData["Playlists data"][newName] = data
+        del self.collectedData["Playlists data"][oldName]
 
-        self.collectedData["Playlists data"][playlist.getTitle()] = {
-            "Creation date": str(date.today()),
-            "Number of times played": 0,
-            "Number of hours played": 0,
-            "First song": {"Random": 0},
-            "Changes history": firstChangesHistory
-            }
+        # Changes the playlist name in the playlistData json file, keeping its list.
+        data = self.playlistsData[oldName]
+        self.playlistsData[newName] = data
+        del self.playlistsData[oldName]
 
         self.saveData()
 
-    def removePlaylist(self, playlistName):
-        if playlistName not in self.playlistsData:
-            raise KeyError
-        del self.playlistsData[playlistName]
-        copyData = self.collectedData["Playlists data"][playlistName]
-        del self.collectedData["Playlists data"][playlistName]
-        self.collectedData["Playlists data"]["(DELETED) {}".format(playlistName)] = copyData
+    def removePlaylist(self, playlistName: str):
+        newName = "(DELETED) {}".format(playlistName)
+        self.changeNameOfPlaylist(playlistName, newName)
+
+        del self.playlistsData[newName]
 
         self.saveData()
 
-    def updatePlaylists(self, playlistsDict):
+    def updatePlaylists(self, playlistsDict: dict):
+        # Updates and saves all changes made by the user to the playlists.
         for title in playlistsDict:
             playlist = playlistsDict[title]
             self.collectedData["Playlists data"][playlist.getTitle()] = playlist.getData()
             self.playlistsData[title] = playlist.getSongsTitles()
         self.saveData()
 
-    def updateSongsData(self, songsDict):
+    def updateSongsData(self, songsDict: dict):
+        # Updates and saves all new stats of the songs.
         for title in songsDict:
             song = songsDict[title]
             self.collectedData["Songs data"][title] = song.getData()
         self.saveData()
 
     def generatePlaylistsAndSongs(self) -> tuple:
+        # Builds and returns the two dictionaries that will be used by the WAVPlayer class.
         playlistsDict = {}
         songsDict = {}
         for path in glob("{}/*.wav".format(WAV_DIRECTORY_PATH)):
@@ -103,6 +106,7 @@ class DataWriter:
                 hoursPlayed = data["Number of hours played"]
                 numberOfPlaylist = data["Number of playlists it is in"]
             else:
+                # If a new .wav file has been added to the directory ./wavFiles, its stats will be initialized
                 addedDate = str(date.today())
                 timesPlayed = 0
                 hoursPlayed = 0
@@ -113,7 +117,7 @@ class DataWriter:
 
         for title in self.playlistsData:
             songs = self.playlistsData[title]
-            songsClasses = [songsDict[name] for name in songs]
+            songsObjects = [songsDict[name] for name in songs]
             data = self.collectedData["Playlists data"][title]
             creationDate = data["Creation date"]
             timesPlayed = data["Number of times played"]
@@ -121,17 +125,6 @@ class DataWriter:
             firstSong = data["First song"]
             changesHistory = data["Changes history"]
             playlistsDict[title] = Playlist(title, creationDate, timesPlayed, hoursPlayed,
-                                            songsClasses, firstSong, changesHistory)
+                                            songsObjects, firstSong, changesHistory)
 
         return playlistsDict, songsDict
-
-    def changeNameOfPlaylist(self, oldName, newName):
-        data = self.collectedData["Playlists data"][oldName]
-        self.collectedData["Playlists data"][newName] = data
-        del self.collectedData["Playlists data"][oldName]
-
-        data = self.playlistsData[oldName]
-        self.playlistsData[newName] = data
-        del self.playlistsData[oldName]
-
-        self.saveData()

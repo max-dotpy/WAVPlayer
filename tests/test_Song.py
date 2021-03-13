@@ -3,7 +3,6 @@ import unittest
 
 
 class TestSong(unittest.TestCase):
-
     def setUp(self):
         self.song = Song("Summer hit 2020",
                          "2020-03-14 16:26:36",

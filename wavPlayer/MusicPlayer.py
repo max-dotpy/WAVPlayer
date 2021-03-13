@@ -65,12 +65,3 @@ class MusicPlayer:
         length = self.getLengthOfSong()
         percentage = self.getPercentagePlayed()
         return length * percentage / 60
-
-
-if __name__ == '__main__':
-    from tkinter import *
-    root = Tk()
-    player = MusicPlayer()
-    player.play()
-
-    root.mainloop()

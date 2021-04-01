@@ -5,8 +5,11 @@ from PIL.ImageTk import PhotoImage
 from wavPlayer.constants import GUI_HEIGHT, GUI_LEFTSIDE_WIDTH, GUI_RIGHTSIDE_WIDTH, ICONS_PATH
 
 
-# Function that returns a Blinking or Static button, it will be used in the following classes.
 def createBlinkingOrStaticButton(cls, master, name, memoryList, **kw) -> BlinkingButton:
+    """
+        Function that returns a Blinking or Static button, it will be used in the following classes.
+    """
+
     if cls == "blinking":
         img = Image.open("{}/{}.png".format(ICONS_PATH, name))
         img2 = Image.open("{}/{}_clicked.png".format(ICONS_PATH, name))
@@ -23,8 +26,10 @@ def createBlinkingOrStaticButton(cls, master, name, memoryList, **kw) -> Blinkin
     return StaticButton(master, photo2, photo, **kw)
 
 
-# This is the Frame containing the Volume functionality and will be implemented later in the class Controls.
 class VolumeFrame(Frame):
+    """
+        This is the Frame containing the Volume functionality and will be implemented later in the class Controls.
+    """
     def __init__(self, master):
         super().__init__(master, width=GUI_RIGHTSIDE_WIDTH, height=50)
         self.buttonsPhotos = []
@@ -43,16 +48,10 @@ class VolumeFrame(Frame):
         self.highVolumeButton.setCommand(self.volumeBar.setToMax)
 
 
-# This is the Frame containing the buttons for interacting with the Music Player
-# and will be implemented later in the class Controls.
 class ButtonsFrame(Frame):
     """
-    + setPrevCommand
-    + setPlayCommand
-    + setNextCommand
-    + setPauseCommand
-    + setRandomCommand
-    + switchPausePlay
+        This is the Frame containing the buttons for interacting with the Music Player
+        and will be implemented later in the class Controls.
     """
     def __init__(self, master, width, height, background):
         super().__init__(master, width=width, height=height, bg=background)
@@ -104,8 +103,11 @@ class ButtonsFrame(Frame):
     def setRandomCommand(self, command):
         self.randomButton.setCommand(command)
 
-    # This method switches between Play Button and Pause Button.
     def switchPausePlay(self):
+        """
+            This method switches between Play Button and Pause Button.
+        """
+
         if self.displayed == "play":
             self.displayed = "pause"
             self.playButton.place_forget()
@@ -117,27 +119,9 @@ class ButtonsFrame(Frame):
         self.update()
 
 
-# First piece of the GUI, it contains functionality for choosing Songs, Playlists, searching them, modifying them.
 class Table(Frame):
     """
-    + setLayout
-    + setPlusButtonCommand
-    + setGearButtonCommand
-    + setBinButtonCommand
-    + setPlaylistListboxCommand
-    + setSongListboxCommand
-    + setReturnEntryCommand
-    + switchListbox
-    + fillPlaylistListbox
-    + fillSongListbox
-    + fillAllSongsListbox
-    + showAllSongsListbox
-    + hideAllSongsListbox
-    + searchListbox
-    + playlistClicked
-    + songClicked
-    + buttonClicked
-    + swapSongsOrder
+        First piece of the GUI, it contains functionality for choosing Songs, Playlists, searching them, modifying them.
     """
     def __init__(self, master, **kw):
         super().__init__(master, width=GUI_LEFTSIDE_WIDTH, height=GUI_HEIGHT, **kw)
@@ -211,8 +195,11 @@ class Table(Frame):
     def setReturnEntryCommand(self, command):
         self.searchEntry.bind("<Return>", command)
 
-    # This method switches between Song and Playlist Listboxes
     def switchListbox(self):
+        """
+            This method switches between Song and Playlist Listboxes
+        """
+
         if self.currentListbox == "playlist":
             self.playlistListbox.pack_forget()
             self.songListbox.pack()
@@ -224,26 +211,38 @@ class Table(Frame):
             self.currentListbox = "playlist"
             self.setPlaylistListboxCommand(lambda *args: self.playlistClicked())
 
-    # Fills the playlistListbox with the elements of the parameter titles as items.
     def fillPlaylistListbox(self, titles):
+        """
+            Fills the playlistListbox with the elements of the parameter titles as items.
+        """
+
         self.playlistListbox.delete(0, "end")
         for title in titles:
             self.playlistListbox.insert("end", title)
 
-    # Fills the songListbox with the elements of the parameter titles as items.
     def fillSongListbox(self, titles):
+        """
+            Fills the songListbox with the elements of the parameter titles as items.
+        """
+
         self.songListbox.delete(0, "end")
         for title in titles:
             self.songListbox.insert("end", title)
 
-    # Fills the allSongsListbox with the elements of the parameter titles as items.
     def fillAllSongsListbox(self, titles):
+        """
+            Fills the allSongsListbox with the elements of the parameter titles as items.
+        """
+
         self.allSongsListbox.delete(0, "end")
         for title in titles:
             self.allSongsListbox.insert("end", title)
 
-    # This method hides current Listbox and shows allSongsListbox
     def showAllSongsListbox(self):
+        """
+            This method hides current Listbox and shows allSongsListbox
+        """
+
         if self.currentListbox == "playlist":
             self.playlistListbox.pack_forget()
             self.allSongsListbox.pack()
@@ -251,8 +250,11 @@ class Table(Frame):
             self.songListbox.pack_forget()
             self.allSongsListbox.pack()
 
-    # This method hides allSongsListbox and shows current Listbox
     def hideAllSongsListbox(self):
+        """
+            This method hides allSongsListbox and shows current Listbox
+        """
+
         self.allSongsListbox.pack_forget()
         if self.currentListbox == "playlist":
             self.playlistListbox.pack()
@@ -261,9 +263,12 @@ class Table(Frame):
             self.songListbox.pack()
             self.songListbox.bind("<ButtonRelease-1>", lambda *args: self.songClicked())
 
-    # This methods allow to filter items in the current Listbox showing only strings containing the text currently
-    # present in the searchEntry.
     def searchListbox(self, complete):
+        """
+            This methods allows to filter items in the current Listbox showing only strings
+            containing the text currently present in the searchEntry.
+        """
+
         text = self.searchEntry.get()
         if text == "":
             if self.currentListbox == "playlist":
@@ -289,8 +294,11 @@ class Table(Frame):
         else:
             self.master.event_generate("<<{}Song clicked>>".format(nameOfButton))
 
-    # This method allows to swap the order of 2 items in the current Listbox.
     def swapSongsOrder(self):
+        """
+            This method allows to swap the order of 2 items in the current Listbox.
+        """
+
         lst = self.songListbox.curselection()
         if not self.swap:
             self.swap = True
@@ -306,14 +314,10 @@ class Table(Frame):
         self.swap = False
 
 
-# Second piece of the GUI, it contains functionality for changing, pausing, unpausing a song, choosing Random and
-# Shuffle options, setting the Volume, displaying the current song's title, choosing the option FadeAndExit and showing
-# the Statistics GUI
 class Controls(Frame):
     """
-    + setLayout
-    + statisticsCommand
-    + setTitleOfSong
+        Second piece of the GUI, it contains functionality for changing, pausing, unpausing a song, choosing Random and
+        Shuffle options, setting the Volume, displaying the current song's title and choosing the option FadeAndExit.
     """
 
     def __init__(self, master, **kw):
@@ -324,7 +328,6 @@ class Controls(Frame):
         self.buttonsFrame = None
         self.volumeFrame = None
         self.fadeButton = None
-        self.statisticsButton = None
 
         self.setLayout()
 
@@ -346,26 +349,25 @@ class Controls(Frame):
         self.volumeFrame.pack()
 
         bottomFrame = Frame(self)
-        bottomFrame.pack(side="bottom", pady=40, padx=150, fill="x")
+        bottomFrame.pack(side="bottom", pady=40, padx=170, fill="x")
         self.fadeButton = TextButton(bottomFrame, "#e7e7e7", "#bbbbba", text="Fade and exit")
-        self.fadeButton.pack(side="left", padx=10)
+        self.fadeButton.pack(side="left", padx=30)
         self.fadeButton.setCommand(lambda *args: self.event_generate("<<Fade and exit>>"))
-        self.statisticsButton = TextButton(bottomFrame, "#e7e7e7", "#bbbbba", text="Statistics")
-        self.statisticsButton.pack(side="left")
-        self.statisticsButton.setCommand(lambda *args: self.statisticsCommand())
 
-    def statisticsCommand(self):
-        self.event_generate("<<Statistics clicked>>")
-
-    # Displays the parameter title on the titleLabel
     def setTitleOfSong(self, title):
+        """
+            Displays the parameter title on the titleLabel.
+        """
         self.titleLabel.configure(text="")
         self.titleLabel.update()
         self.titleLabel.configure(text=title)
 
 
-# This class merges all the previous classes together.
 class GUI:
+    """
+        This class merges all the previous classes together.
+    """
+
     def __init__(self, master):
         self.table = Table(master)
         self.table.pack(side="left", fill="y")

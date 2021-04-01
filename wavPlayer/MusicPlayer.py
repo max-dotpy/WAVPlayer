@@ -3,18 +3,7 @@ from pygame import mixer
 
 class MusicPlayer:
     """
-    + load
-    + play
-    + pause
-    + unpause
-    + stop
-    + changeSong
-    + isBusy
-    + changeVolume
-    + fadeAndExit
-    + getLengthOfSong
-    + getPercentagePlayed
-    + getMinutesPlayed
+        This class deals with all the possible audio commands.
     """
     def __init__(self):
         mixer.init()

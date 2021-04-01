@@ -7,32 +7,9 @@ from datetime import datetime as date
 
 class WAVPlayer:
     """
-    + loadData
-    + getSortedPlaylistsTitles
-    + playlistClicked
-    + songClicked
-    + playPlaylist
-    + nextSong
-    + looper
-    + randomButtonClicked
-    + search
-    + changeVolume
-    + pauseClicked
-    + playClicked
-    + prevClicked
-    + fadeAndExit
-    + binClickedFirst
-    + binClickedWithPlaylistSecond
-    + binClickedWithSongSecond
-    + addClickedWithPlaylistFirst
-    + addClickedWithSongFirst
-    + addClickedWithPlaylistSecond
-    + addClickedWithSongSecond
-    + gearClickedWithPlaylistFirst
-    + gearClickedWithSongFirst
-    + gearClickedWithPlaylistSecond
-    + gearClickedWithSongSecond
+        This class merges all the other classes together.
     """
+
     def __init__(self, root):
         # Initialize WAVPlayer instance variables that will be needed.
         self.root = root
@@ -73,7 +50,6 @@ class WAVPlayer:
         self.root.bind("<<AddSong clicked>>", lambda *args: self.addClickedWithSongFirst())
         self.root.bind("<<GearPlaylist clicked>>", lambda *args: self.gearClickedWithPlaylistFirst())
         self.root.bind("<<GearSong clicked>>", lambda *args: self.gearClickedWithSongFirst())
-        self.root.bind("<<Statistics clicked>>", lambda *args: None)  # TODO: IMPLEMENT STATISTICS
 
     def loadData(self):
         return self.dataWriter.generatePlaylistsAndSongs()
@@ -81,8 +57,11 @@ class WAVPlayer:
     def getSortedPlaylistsTitles(self) -> list:
         return sorted(list(self.playlistsDict.keys()))
 
-    # This method is called when user clicks a Playlist.
     def playlistClicked(self):
+        """
+            This method is called when user clicks a Playlist.
+        """
+
         table = self.gui.table
         # This is needed for resetting the currentIndex after the first playlist changes.
         if self.currentPlaylist is not None:
@@ -96,8 +75,11 @@ class WAVPlayer:
         table.switchListbox()
         playlist.played()
 
-    # This method is called when user clicks a Song.
     def songClicked(self):
+        """
+            This method is called when user clicks a Song.
+        """
+
         table = self.gui.table
         index = table.songListbox.curselection()[0]
         song = self.currentPlaylist.getSongs()[index]
@@ -118,8 +100,11 @@ class WAVPlayer:
         self.playPlaylist()
         table.switchListbox()
 
-    # This method is called when a song should start playing, it also begins the looper method.
     def playPlaylist(self):
+        """
+            This method is called when a song should start playing, it also begins the looper method.
+        """
+
         self.nextSong()
         self.looper()
 
@@ -169,8 +154,11 @@ class WAVPlayer:
                 return
         self.root.after(1000, self.looper)
 
-    # This method swaps between random shuffled Playlist, and normal Playlist, fixing the current index.
     def randomButtonClicked(self):
+        """
+            This method swaps between random shuffled Playlist, and normal Playlist, fixing the current index.
+        """
+
         if self.currentOrder:
             newIndex = self.otherOrder.index(self.currentOrder[self.currentIndex])
             copy = self.currentOrder[:]
@@ -178,8 +166,11 @@ class WAVPlayer:
             self.otherOrder = copy
             self.currentIndex = newIndex
 
-    # This method is called when the User presses Return/Enter.
     def search(self):
+        """
+            This method is called when the User presses Return/Enter.
+        """
+
         if self.gui.table.currentListbox == "playlist":
             self.gui.table.searchListbox(self.getSortedPlaylistsTitles())
         else:
@@ -224,8 +215,11 @@ class WAVPlayer:
     def fadeAndExit(self):
         self.musicPlayer.fadeAndExit(self.root)
 
-    # Method called when the Bin Button is clicked one time.
     def binClickedFirst(self):
+        """
+            Method called when the Bin Button is clicked one time.
+        """
+
         table = self.gui.table
         if table.currentListbox == "playlist":
             word = "playlist"
@@ -240,8 +234,11 @@ class WAVPlayer:
         self.gui.controls.setTitleOfSong(
             "<-- Click which {} you want to delete, then click the bin again".format(word))
 
-    # Method called the second time the Bin Button is called and there was the Playlists Listbox.
     def binClickedWithPlaylistSecond(self):
+        """
+            Method called the second time the Bin Button is called and there was the Playlists Listbox.
+        """
+
         index = self.gui.table.playlistListbox.curselection()[0]
         title = self.getSortedPlaylistsTitles()[index]
         for song in self.playlistsDict[title].getSongs():
@@ -257,8 +254,11 @@ class WAVPlayer:
         self.gui.controls.setTitleOfSong("")
         self.root.bind("<<BinPlaylist clicked>>", lambda *args: self.binClickedFirst())
 
-    # Method called the second time the Bin Button is called and there was the Songs Listbox
     def binClickedWithSongSecond(self):
+        """
+            Method called the second time the Bin Button is called and there was the Songs Listbox.
+        """
+
         self.dataWriter.updatePlaylists(self.playlistsDict)
         self.dataWriter.updateSongsData(self.songsDict)
 
@@ -285,14 +285,18 @@ class WAVPlayer:
         self.gui.controls.setTitleOfSong("")
         self.root.bind("<<BinSong clicked>>", lambda *args: self.binClickedFirst())
 
-    # Method called when user clicks the + Button, first part of the process to create a new Playlist.
     def addClickedWithPlaylistFirst(self):
+        """
+            Method called when user clicks the + Button, first part of the process to create a new Playlist.
+        """
+
         searchEntry = self.gui.table.searchEntry
         searchEntry.delete(0, "end")
         searchEntry.insert("end", "Playlist name?")
         searchEntry.selection_range(0, "end")
         searchEntry.focus()
         self.gui.controls.setTitleOfSong("<-- Choose what songs you want to add to the playlist, then click + again")
+
         # Unbind the Return key from the searchEntry.
         self.gui.table.setReturnEntryCommand(lambda *args: None)
 
@@ -302,8 +306,11 @@ class WAVPlayer:
 
         self.root.bind("<<AddPlaylist clicked>>", lambda *args: self.addClickedWithPlaylistSecond())
 
-    # Method called when user clicks the + Button, first part of the process to add Songs to a Playlist.
     def addClickedWithSongFirst(self):
+        """
+            Method called when user clicks the + Button, first part of the process to add Songs to a Playlist.
+        """
+
         self.gui.controls.setTitleOfSong("<-- Click which songs you want to add, then click the + again")
         lst = list(self.songsDict.keys())
         for song in self.currentPlaylist.getSongsTitles():
@@ -316,8 +323,11 @@ class WAVPlayer:
 
         self.root.bind("<<AddSong clicked>>", lambda *args: self.addClickedWithSongSecond())
 
-    # Method called after the first part of the process to create a new Playlist.
     def addClickedWithPlaylistSecond(self):
+        """
+            Method called after the first part of the process to create a new Playlist.
+        """
+
         table = self.gui.table
         indexes = table.allSongsListbox.curselection()
         table.hideAllSongsListbox()
@@ -337,8 +347,11 @@ class WAVPlayer:
         table.fillPlaylistListbox(self.getSortedPlaylistsTitles())
         self.root.bind("<<AddPlaylist clicked>>", lambda *args: self.addClickedWithPlaylistFirst())
 
-    # Method called after the first part of the process to add new Songs to a Playlist.
     def addClickedWithSongSecond(self):
+        """
+            Method called after the first part of the process to add new Songs to a Playlist.
+        """
+
         self.dataWriter.updatePlaylists(self.playlistsDict)
         self.dataWriter.updateSongsData(self.songsDict)
 
@@ -365,8 +378,11 @@ class WAVPlayer:
         self.gui.controls.setTitleOfSong("")
         self.root.bind("<<AddSong clicked>>", lambda *args: self.addClickedWithSongFirst())
 
-    # Method called when user clicks the Gear Button, first part of the process to change a Playlist's name.
     def gearClickedWithPlaylistFirst(self):
+        """
+            Method called when user clicks the Gear Button, first part of the process to change a Playlist's name.
+        """
+
         self.gui.table.searchEntry.delete(0, "end")
         self.gui.table.searchEntry.insert("end", "Playlist new name?")
         self.gui.table.searchEntry.selection_range(0, "end")
@@ -377,16 +393,22 @@ class WAVPlayer:
 
         self.root.bind("<<GearPlaylist clicked>>", lambda *args: self.gearClickedWithPlaylistSecond())
 
-    # Method called when user clicks the Gear Button,
-    # first part of the process of changing order of a Playlist's songs.
     def gearClickedWithSongFirst(self):
+        """
+            Method called when user clicks the Gear Button,
+            first part of the process of changing order of a Playlist's songs.
+        """
+
         self.gui.controls.setTitleOfSong("<-- Select 2 songs to swap them, then click the gear again")
         self.gui.table.songListbox.configure(selectmode="multiple")
         self.gui.table.setSongListboxCommand(lambda *args: self.gui.table.swapSongsOrder())
         self.root.bind("<<GearSong clicked>>", lambda *args: self.gearClickedWithSongSecond())
 
-    # Method called after the first part of the process to change a Playlist's name.
     def gearClickedWithPlaylistSecond(self):
+        """
+            Method called after the first part of the process to change a Playlist's name.
+        """
+
         table = self.gui.table
         index = table.playlistListbox.curselection()[0]
         titleToChange = self.getSortedPlaylistsTitles()[index]
@@ -400,8 +422,11 @@ class WAVPlayer:
         table.setPlaylistListboxCommand(lambda *args: table.playlistClicked())
         self.root.bind("<<GearPlaylist clicked>>", lambda *args: self.gearClickedWithPlaylistFirst())
 
-    # Method called after the first part of the process of changing order of a Playlist's songs.
     def gearClickedWithSongSecond(self):
+        """
+            Method called after the first part of the process of changing order of a Playlist's songs.
+        """
+
         newOrder = list(self.gui.table.songListbox.get(0, "end"))
         self.currentPlaylist.changeOrder(newOrder)
         self.gui.table.songListbox.configure(selectmode="browse")

@@ -1,13 +1,10 @@
 from tkinter import Label, Canvas
 
 
-# This is an image button that changes image when clicked. When the click is released the
-# image changes back and the command runs.
 class BlinkingButton(Label):
     """
-    + setCommand
-    + clicked
-    + unclicked
+        This is an image button that changes image when clicked. When the click is released the
+        image changes back and the command runs.
     """
     def __init__(self, master, normal, click, **kw):
         self.normal = normal
@@ -30,14 +27,10 @@ class BlinkingButton(Label):
         self.command()
 
 
-# This is an image button that changes image when clicked. When the click is released the
-# image doesn't change back and the command runs. The image changes back when clicked a second time.
 class StaticButton(BlinkingButton):
     """
-    + setCommand
-    + clicked
-    + unclicked
-    + getState
+        This is an image button that changes image when clicked. When the click is released the
+        image doesn't change back and the command runs. The image changes back when clicked a second time.
     """
     def __init__(self, master, normal, click, **kw):
         super().__init__(master, normal, click, **kw)
@@ -60,13 +53,10 @@ class StaticButton(BlinkingButton):
         return False
 
 
-# This is a text button that changes background color when clicked.
-# It changes back and run its command when unclicked.
 class TextButton(Label):
     """
-    + setCommand
-    + clicked
-    + unclicked
+        This is a text button that changes background color when clicked.
+        It changes back and run its command when unclicked.
     """
     def __init__(self, master, background, backgroundClicked, **kw):
         super().__init__(master, bg=background, **kw)
@@ -90,11 +80,9 @@ class TextButton(Label):
         self.command()
 
 
-# A simple progress bar that progresses when the progress method is called.
 class ProgressBar(Canvas):
     """
-    + restart
-    + progress
+        A simple progress bar that progresses when the progress method is called.
     """
     def __init__(self, master, width, color="#6c6c6c", **kw):
         super().__init__(master, height=4, width=width, bd=0, highlightthickness=0, **kw)
@@ -110,15 +98,7 @@ class ProgressBar(Canvas):
         self.create_rectangle(0, 0, x, 4, fill=self.color, outline=self.color)
 
 
-# Volume bar widget.
 class VolumeBar(Canvas):
-    """
-    + drawBall
-    + moveBall
-    + setToZero
-    + setToMax
-    + getVolumePercentage
-    """
     def __init__(self, master, width, ballOutline="#7f7f7f", ballFill="white", dark="#969696", light="#c9c9c9", **kw):
         super().__init__(master, width=width, height=50, bd=0, highlightthickness=0, **kw)
         self.master = master

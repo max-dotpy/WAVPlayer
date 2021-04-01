@@ -3,17 +3,7 @@ from wavPlayer.constants import WAV_DIRECTORY_PATH
 
 class Song:
     """
-    + getTitle
-    + getAddedDate
-    + getTimesPlayed
-    + getHoursPlayed
-    + getNumberOfPlaylist
-    + getSongPath
-    + getData
-    + played
-    + playedFor
-    + addedToPlaylist
-    + removedFromPlaylist
+        It stores every information we need to work with Songs.
     """
 
     def __init__(self, title: str, addedDate: str, timesPlayed=0, hoursPlayed=0, numberOfPlaylist=0):

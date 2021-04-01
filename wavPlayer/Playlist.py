@@ -4,28 +4,7 @@ from random import shuffle
 
 class Playlist:
     """
-    + setTitle
-    + getTitle
-    + getCreationDate
-    + getTimesPlayed
-    + getHoursPlayed
-    + getSongs
-    + getSongsTitles
-    + getSongFromTitle
-    + getNumberOfSongs
-    + getFirstSongDict
-    + getChangesHistory
-    + getRandomizedPlaylist
-    + getOrderedPlaylist
-    + getData
-    + played
-    + playedFor
-    + firstSongPicked
-    + addChanges
-    + addSong
-    + removeSong
-    + isDeleted
-    + changeOrder
+        It stores every information we need to work with Playlists.
     """
     def __init__(self, title, creationDate, timesPlayed=0,
                  hoursPlayed=0, songs=None, firstSong=None, changesHistory=""):

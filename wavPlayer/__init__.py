@@ -20,7 +20,3 @@ class Application:
     def save(self):
         self.wavPlayer.dataWriter.updatePlaylists(self.wavPlayer.playlistsDict)
         self.wavPlayer.dataWriter.updateSongsData(self.wavPlayer.songsDict)
-
-
-if __name__ == '__main__':
-    Application().run()

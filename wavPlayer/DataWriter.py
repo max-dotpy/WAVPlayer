@@ -18,17 +18,13 @@ def checkDirectoriesExist():
 
 class DataWriter:
     """
-    + saveData
-    + changeNameOfPlaylist
-    + removePlaylist
-    + updatePlaylists
-    + updateSongsData
-    + generatePlaylistsAndSongs
+        This class manages the User data.
     """
     def __init__(self, playlistPath=PLAYLISTS_DATA_PATH, collectedDataPath=COLLECTED_DATA_PATH):
         checkDirectoriesExist()
         self.playlistPath = playlistPath
         self.collectedDataPath = collectedDataPath
+
         # Loads the playlistData json file and if it can't be found, it will be created
         try:
             with open(playlistPath) as playlistsDataFile:
@@ -89,7 +85,9 @@ class DataWriter:
         self.saveData()
 
     def updatePlaylists(self, playlistsDict: dict):
-        # Updates and saves all changes made by the user to the playlists.
+        """
+        Updates and saves all changes made by the user to the playlists.
+        """
         for title in playlistsDict:
             playlist = playlistsDict[title]
             self.collectedData["Playlists data"][playlist.getTitle()] = playlist.getData()
@@ -97,14 +95,18 @@ class DataWriter:
         self.saveData()
 
     def updateSongsData(self, songsDict: dict):
-        # Updates and saves all new stats of the songs.
+        """
+        Updates and saves all new stats of the songs.
+        """
         for title in songsDict:
             song = songsDict[title]
             self.collectedData["Songs data"][title] = song.getData()
         self.saveData()
 
     def generatePlaylistsAndSongs(self) -> tuple:
-        # Builds and returns the two dictionaries that will be used by the WAVPlayer class.
+        """
+        Builds and returns the two dictionaries that will be used by the WAVPlayer class.
+        """
         playlistsDict = {}
         songsDict = {}
         for path in glob("{}/*.wav".format(WAV_DIRECTORY_PATH)):

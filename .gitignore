@@ -6,6 +6,7 @@ userData/playlistsData.json
 .DS_Store
 .AppleDouble
 .LSOverride
+.idea
 # Thumbnails
 ._*
 

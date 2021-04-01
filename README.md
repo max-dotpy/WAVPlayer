@@ -1,7 +1,7 @@
 # WAVPlayer
 
 A simple Player that reads every .wav file in the directory /wavFiles, which will be created if missing.
-The Player will store the user data in JSON files in the /userData directory. 
+The Player will store the user data in JSON files in the /userData directory, which will be created on the first run. 
 
 In the directory /Resources there are the .png files for the Player's icons, and a sample .wav file for the tests.
 
